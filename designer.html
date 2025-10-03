@@ -40,7 +40,7 @@
             display: grid;
             grid-template-columns: 1fr 400px;
             gap: 30px;
-            height: calc(100vh - 150px);
+            min-height: calc(100vh - 200px);
         }
 
         /* WORKSPACE DESIGNER - 50% of screen */
@@ -192,6 +192,100 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 220px);
+        }
+
+        /* Workspace Presets */
+        .preset-manager {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .preset-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #4a5568;
+        }
+
+        .preset-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .preset-input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .preset-list {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .preset-item {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preset-item.active {
+            border-color: #667eea;
+            background: #e6f3ff;
+        }
+
+        .preset-info {
+            flex: 1;
+        }
+
+        .preset-name {
+            font-weight: bold;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .preset-hotkey {
+            font-size: 0.8rem;
+            color: #666;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        .preset-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .preset-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .preset-btn.load {
+            background: #667eea;
+            color: white;
+        }
+
+        .preset-btn.delete {
+            background: #e53e3e;
+            color: white;
         }
 
         .app-library {
@@ -237,9 +331,10 @@
         .generated-script {
             background: rgba(255,255,255,0.95);
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            max-height: 350px;
+            max-height: 300px;
+            margin-bottom: 20px;
         }
 
         .script-title {
@@ -372,10 +467,23 @@
             border-style: solid !important;
         }
 
+        /* Bottom Instructions */
+        .bottom-instructions {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 30px;
+        }
+
         @media (max-width: 1200px) {
             .main-content {
                 grid-template-columns: 1fr;
                 grid-template-rows: auto auto;
+            }
+            
+            .sidebar {
+                max-height: none;
             }
         }
     </style>
@@ -387,55 +495,10 @@
             <p>Drag applications onto monitors • Configure splits • Generate Lua script</p>
         </div>
 
-        <!-- Keystroke Display -->
+        <!-- Current Preset Display -->
         <div class="keystroke-display">
             <div class="hotkey" id="hotkeyDisplay">⌘ + ⌥ + ⌃ + W</div>
-            <div class="hotkey-desc">Hotkey to trigger your custom workspace layout</div>
-            <div style="margin-top: 15px;">
-                <label style="margin-right: 10px;">Customize hotkey:</label>
-                <select id="hotkeySelector" style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
-                    <option value="cmd,alt,ctrl,W">⌘⌥⌃W (Default)</option>
-                    <option value="cmd,alt,W">⌘⌥W (Simpler)</option>
-                    <option value="cmd,ctrl,W">⌘⌃W (Alternative)</option>
-                    <option value="cmd,alt,ctrl,Space">⌘⌥⌃Space (Spacebar)</option>
-                    <option value="cmd,alt,ctrl,R">⌘⌥⌃R (Reset)</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Installation Instructions -->
-        <div class="installation-section">
-            <div class="installation-title">📥 How to Install in Hammerspoon</div>
-            
-            <div class="step">
-                <span class="step-number">1.</span>
-                <strong>Install Hammerspoon:</strong> Download from <a href="https://www.hammerspoon.org/" target="_blank">hammerspoon.org</a> if you haven't already
-            </div>
-            
-            <div class="step">
-                <span class="step-number">2.</span>
-                <strong>Open Hammerspoon config:</strong> Click Hammerspoon menu bar icon → "Open Config" or manually edit <span class="file-path">~/.hammerspoon/init.lua</span>
-            </div>
-            
-            <div class="step">
-                <span class="step-number">3.</span>
-                <strong>Copy generated script:</strong> Use the "Copy Script" button below after configuring your workspace
-            </div>
-            
-            <div class="step">
-                <span class="step-number">4.</span>
-                <strong>Paste into config:</strong> Add the generated code to your <span class="file-path">init.lua</span> file (replace any existing workspace code)
-            </div>
-            
-            <div class="step">
-                <span class="step-number">5.</span>
-                <strong>Reload Hammerspoon:</strong> Click Hammerspoon menu bar icon → "Reload Config" or press <span class="file-path">⌘⌥⌃R</span>
-            </div>
-            
-            <div class="step">
-                <span class="step-number">6.</span>
-                <strong>Test your workspace:</strong> Press <span class="file-path">⌘⌥⌃W</span> to activate your custom workspace layout!
-            </div>
+            <div class="hotkey-desc" id="presetDesc">Default Workspace - Drag apps to configure</div>
         </div>
 
         <div class="main-content">
@@ -544,6 +607,29 @@
 
             <!-- SIDEBAR -->
             <div class="sidebar">
+                <!-- Workspace Presets -->
+                <div class="preset-manager">
+                    <div class="preset-title">🏠 Workspace Presets</div>
+                    
+                    <div class="preset-controls">
+                        <input type="text" id="presetName" class="preset-input" placeholder="Preset name (e.g., Development Mode)">
+                        <select id="presetHotkey" class="preset-input">
+                            <option value="cmd,alt,ctrl,W">⌘⌥⌃W</option>
+                            <option value="cmd,alt,ctrl,D">⌘⌥⌃D</option>
+                            <option value="cmd,alt,ctrl,M">⌘⌥⌃M</option>
+                            <option value="cmd,alt,ctrl,F">⌘⌥⌃F</option>
+                            <option value="cmd,alt,ctrl,1">⌘⌥⌃1</option>
+                            <option value="cmd,alt,ctrl,2">⌘⌥⌃2</option>
+                            <option value="cmd,alt,ctrl,3">⌘⌥⌃3</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="savePreset()" style="flex: none;">Save</button>
+                    </div>
+                    
+                    <div class="preset-list" id="presetList">
+                        <!-- Presets will be populated here -->
+                    </div>
+                </div>
+
                 <!-- App Library -->
                 <div class="app-library">
                     <div class="library-title">📱 Application Library</div>
@@ -562,6 +648,10 @@
                         <div class="app-item" draggable="true" data-app="Microsoft Word">Word</div>
                         <div class="app-item" draggable="true" data-app="Microsoft PowerPoint">PowerPoint</div>
                         <div class="app-item" draggable="true" data-app="Hammerspoon">Console</div>
+                        <div class="app-item" draggable="true" data-app="Google Chrome">Chrome</div>
+                        <div class="app-item" draggable="true" data-app="Microsoft Edge">Edge</div>
+                        <div class="app-item" draggable="true" data-app="Safari">Safari</div>
+                        <div class="app-item" draggable="true" data-app="Perplexity Comet">Comet</div>
                     </div>
                 </div>
 
@@ -579,6 +669,46 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Bottom Instructions -->
+        <div class="bottom-instructions">
+            <div class="installation-title">📥 How to Install in Hammerspoon</div>
+            
+            <div class="step">
+                <span class="step-number">1.</span>
+                <strong>Install Hammerspoon:</strong> Download from <a href="https://www.hammerspoon.org/" target="_blank">hammerspoon.org</a> if you haven't already
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2.</span>
+                <strong>Create workspace presets:</strong> Configure different layouts above and save them with unique names and hotkeys
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3.</span>
+                <strong>Copy generated script:</strong> Use the "Copy Script" button - it includes ALL your saved presets
+            </div>
+            
+            <div class="step">
+                <span class="step-number">4.</span>
+                <strong>Open Hammerspoon config:</strong> Click Hammerspoon menu bar icon → "Open Config" or edit <span class="file-path">~/.hammerspoon/init.lua</span>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">5.</span>
+                <strong>Paste into config:</strong> Add the generated code to your <span class="file-path">init.lua</span> file (replace any existing workspace code)
+            </div>
+            
+            <div class="step">
+                <span class="step-number">6.</span>
+                <strong>Reload Hammerspoon:</strong> Click Hammerspoon menu bar icon → "Reload Config" or press <span class="file-path">⌘⌥⌃R</span>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">7.</span>
+                <strong>Test your workspaces:</strong> Use each preset's unique hotkey to switch between different workspace layouts!
+            </div>
+        </div>
     </div>
 
     <script>
@@ -594,42 +724,166 @@
         const apps = [
             'Microsoft Outlook', 'Microsoft Teams', 'Notion', 'Red Sands', 'ChatGPT',
             'Claude', 'Perplexity- Ask Anything', 'Cursor', 'GitHub Desktop', 'Messages',
-            'Microsoft Excel', 'Microsoft Word', 'Microsoft PowerPoint', 'Hammerspoon'
+            'Microsoft Excel', 'Microsoft Word', 'Microsoft PowerPoint', 'Hammerspoon',
+            'Google Chrome', 'Microsoft Edge', 'Safari', 'Perplexity Comet'
         ];
 
         // Current hotkey configuration
         let currentHotkey = { keys: ['cmd', 'alt', 'ctrl'], trigger: 'W', display: '⌘ + ⌥ + ⌃ + W' };
+        
+        // Preset management
+        let workspacePresets = {};
+        let currentPresetId = 'default';
+        let currentPresetName = 'Default Workspace';
 
         // Initialize drag and drop
         document.addEventListener('DOMContentLoaded', function() {
             initializeDragAndDrop();
             initializeSplitSelectors();
             populateDropdowns();
-            initializeHotkeySelector();
+            loadPresets();
+            updatePresetDisplay();
             generateScript();
         });
 
-        function initializeHotkeySelector() {
-            const selector = document.getElementById('hotkeySelector');
-            selector.addEventListener('change', function() {
-                const value = this.value;
-                const parts = value.split(',');
-                const trigger = parts.pop();
-                const keys = parts;
+        function savePreset() {
+            const nameInput = document.getElementById('presetName');
+            const hotkeySelect = document.getElementById('presetHotkey');
+            
+            const name = nameInput.value.trim();
+            if (!name) {
+                alert('Please enter a preset name');
+                return;
+            }
+            
+            const hotkeyValue = hotkeySelect.value;
+            const parts = hotkeyValue.split(',');
+            const trigger = parts.pop();
+            const keys = parts;
+            
+            const displayMap = {
+                'cmd': '⌘', 'alt': '⌥', 'ctrl': '⌃', 'shift': '⇧'
+            };
+            const displayKeys = keys.map(k => displayMap[k] || k).join(' + ');
+            const hotkeyDisplay = `${displayKeys} + ${trigger}`;
+            
+            const presetId = Date.now().toString();
+            workspacePresets[presetId] = {
+                id: presetId,
+                name: name,
+                hotkey: { keys, trigger, display: hotkeyDisplay },
+                config: JSON.parse(JSON.stringify(workspaceConfig))
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('hammerspoonPresets', JSON.stringify(workspacePresets));
+            
+            // Clear inputs
+            nameInput.value = '';
+            
+            // Update display
+            renderPresetList();
+            generateScript();
+        }
+        
+        function loadPresets() {
+            const saved = localStorage.getItem('hammerspoonPresets');
+            if (saved) {
+                workspacePresets = JSON.parse(saved);
+            }
+            renderPresetList();
+        }
+        
+        function renderPresetList() {
+            const list = document.getElementById('presetList');
+            list.innerHTML = '';
+            
+            Object.values(workspacePresets).forEach(preset => {
+                const item = document.createElement('div');
+                item.className = `preset-item ${preset.id === currentPresetId ? 'active' : ''}`;
+                item.innerHTML = `
+                    <div class="preset-info">
+                        <div class="preset-name">${preset.name}</div>
+                        <div class="preset-hotkey">${preset.hotkey.display}</div>
+                    </div>
+                    <div class="preset-actions">
+                        <button class="preset-btn load" onclick="loadPreset('${preset.id}')">Load</button>
+                        <button class="preset-btn delete" onclick="deletePreset('${preset.id}')">Delete</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+        
+        function loadPreset(presetId) {
+            if (!workspacePresets[presetId]) return;
+            
+            const preset = workspacePresets[presetId];
+            currentPresetId = presetId;
+            currentPresetName = preset.name;
+            currentHotkey = preset.hotkey;
+            workspaceConfig = JSON.parse(JSON.stringify(preset.config));
+            
+            // Update UI
+            updatePresetDisplay();
+            updateMonitorDisplays();
+            renderPresetList();
+            generateScript();
+        }
+        
+        function deletePreset(presetId) {
+            if (confirm('Delete this preset?')) {
+                delete workspacePresets[presetId];
+                localStorage.setItem('hammerspoonPresets', JSON.stringify(workspacePresets));
                 
-                // Update hotkey configuration
-                currentHotkey.keys = keys;
-                currentHotkey.trigger = trigger;
+                if (currentPresetId === presetId) {
+                    currentPresetId = 'default';
+                    currentPresetName = 'Default Workspace';
+                    resetToDefault();
+                }
                 
-                // Update display
-                const displayMap = {
-                    'cmd': '⌘', 'alt': '⌥', 'ctrl': '⌃', 'shift': '⇧'
-                };
-                const displayKeys = keys.map(k => displayMap[k] || k).join(' + ');
-                currentHotkey.display = `${displayKeys} + ${trigger}`;
-                
-                document.getElementById('hotkeyDisplay').textContent = currentHotkey.display;
+                renderPresetList();
                 generateScript();
+            }
+        }
+        
+        function updatePresetDisplay() {
+            document.getElementById('hotkeyDisplay').textContent = currentHotkey.display;
+            document.getElementById('presetDesc').textContent = `${currentPresetName} - Configure your apps`;
+        }
+        
+        function resetToDefault() {
+            workspaceConfig = {
+                monitor1: { split: 'split-2', apps: { top: null, bottom: null } },
+                monitor2: { split: 'split-2', apps: { top: null, bottom: null } },
+                monitor3: { split: 'single', apps: { full: null } },
+                monitor4: { split: 'single', apps: { full: null } }
+            };
+            currentHotkey = { keys: ['cmd', 'alt', 'ctrl'], trigger: 'W', display: '⌘ + ⌥ + ⌃ + W' };
+            updateMonitorDisplays();
+            updatePresetDisplay();
+        }
+        
+        function updateMonitorDisplays() {
+            // Reset all monitor displays to match workspaceConfig
+            ['1', '2', '3', '4'].forEach(monitor => {
+                const monitorKey = `monitor${monitor}`;
+                const config = workspaceConfig[monitorKey];
+                
+                // Update split selector
+                const splitSelector = document.querySelector(`[data-monitor="${monitor}"] .split-selector`);
+                if (splitSelector) {
+                    splitSelector.value = config.split;
+                    updateMonitorSplit(monitor, config.split);
+                }
+                
+                // Update apps in zones
+                Object.entries(config.apps).forEach(([zone, app]) => {
+                    if (app) {
+                        updateZoneDisplay(monitor, zone, app);
+                        updateDropdown(monitor, zone, app);
+                    }
+                });
             });
         }
 
@@ -861,21 +1115,148 @@
         }
 
         function generateScript() {
-            // Create Lua array format for hotkey
-            const luaKeys = currentHotkey.keys.map(k => `"${k}"`).join(',');
-            
             let script = `-- Hammerspoon Workspace Configuration
 -- Generated by Workspace Designer
--- ${currentHotkey.display} to trigger your custom workspace layout
+-- Multiple workspace presets with individual hotkeys
 --
 -- Installation Instructions:
 -- 1. Copy this entire script
 -- 2. Open ~/.hammerspoon/init.lua (Hammerspoon menu → "Open Config")
 -- 3. Paste this code (replace any existing workspace code)
 -- 4. Reload Hammerspoon (menu → "Reload Config" or ⌘⌥⌃R)
--- 5. Press ${currentHotkey.display} to activate your workspace!
+-- 5. Use the hotkeys below to activate different workspace layouts!
 
-hs.hotkey.bind({${luaKeys}}, "${currentHotkey.trigger}", function()
+-- WORKSPACE PRESETS:
+`;
+
+            // Add current workspace if it has apps
+            const hasApps = Object.values(workspaceConfig).some(monitor => 
+                Object.values(monitor.apps).some(app => app !== null)
+            );
+            
+            if (hasApps) {
+                const luaKeys = currentHotkey.keys.map(k => `"${k}"`).join(',');
+                script += `-- ${currentPresetName}: ${currentHotkey.display}\n`;
+                script += generateWorkspaceFunction(currentPresetName, currentHotkey, workspaceConfig);
+            }
+            
+            // Add saved presets
+            Object.values(workspacePresets).forEach(preset => {
+                const luaKeys = preset.hotkey.keys.map(k => `"${k}"`).join(',');
+                script += `\n-- ${preset.name}: ${preset.hotkey.display}\n`;
+                script += generateWorkspaceFunction(preset.name, preset.hotkey, preset.config);
+            });
+            
+            document.getElementById('generatedCode').textContent = script;
+        }
+        
+        function generateWorkspaceFunction(name, hotkey, config) {
+            const luaKeys = hotkey.keys.map(k => `"${k}"`).join(',');
+            
+            let script = `hs.hotkey.bind({${luaKeys}}, "${hotkey.trigger}", function()
+  -- ${name}
+  local toKeep = {
+    ["Hammerspoon"]=true,
+    ["Finder"]=true,
+    ["Raycast"]=true,
+    ["Wispr Flow"]=true,
+    ["Hand Mirror"]=true
+  }
+  
+  for _, app in ipairs(hs.application.runningApplications()) do
+    local name = app:name()
+    if name and not toKeep[name] then app:kill() end
+  end
+
+  hs.timer.doAfter(3, function()
+    local screens = {
+      one   = hs.screen.find(5), -- Monitor 1
+      two   = hs.screen.find(2), -- Monitor 2  
+      three = hs.screen.find(3), -- Monitor 3 (Ultrawide)
+      four  = hs.screen.find(1)  -- Monitor 4 (MacBook)
+    }
+    
+    -- Launch applications
+`;
+
+            // Add app launches
+            const allApps = new Set();
+            Object.values(config).forEach(monitor => {
+                Object.values(monitor.apps).forEach(app => {
+                    if (app) allApps.add(app);
+                });
+            });
+
+            allApps.forEach(app => {
+                script += `    hs.application.launchOrFocus("${app}")\n`;
+            });
+
+            script += `
+    -- Window arrangement
+    hs.timer.doAfter(8, function()
+      local function place(win, screen, xFrac, wFrac, yFrac, hFrac)
+        if win and screen then
+          local f = screen:frame()
+          win:moveToScreen(screen)
+          win:setFrame({
+            x=f.x+f.w*xFrac,
+            y=f.y+f.h*yFrac,
+            w=f.w*wFrac,
+            h=f.h*hFrac
+          })
+        end
+      end
+      
+      local wins = hs.window.filter.default:getWindows()
+`;
+
+            // Generate window placement code for each monitor
+            ['monitor1', 'monitor2', 'monitor3', 'monitor4'].forEach((monitorKey, index) => {
+                const monitor = config[monitorKey];
+                const screenVar = ['screens.one', 'screens.two', 'screens.three', 'screens.four'][index];
+                
+                Object.entries(monitor.apps).forEach(([zone, app]) => {
+                    if (app) {
+                        script += `      
+      -- ${app} on Monitor ${index + 1} (${zone})
+      for _, win in ipairs(wins) do
+        if win:application():name() == "${app}" then
+          `;
+                        
+                        if (zone === 'full') {
+                            script += `place(win, ${screenVar}, 0, 1, 0, 1) -- Fullscreen`;
+                        } else if (zone === 'top') {
+                            script += `place(win, ${screenVar}, 0, 1, 0, 0.5) -- Top half`;
+                        } else if (zone === 'bottom') {
+                            script += `place(win, ${screenVar}, 0, 1, 0.5, 0.5) -- Bottom half`;
+                        } else if (zone === 'left') {
+                            script += `place(win, ${screenVar}, 0, 0.5, 0, 1) -- Left half`;
+                        } else if (zone === 'right') {
+                            script += `place(win, ${screenVar}, 0.5, 0.5, 0, 1) -- Right half`;
+                        } else if (zone === 'left3') {
+                            script += `place(win, ${screenVar}, 0, 0.33, 0, 1) -- Left third`;
+                        } else if (zone === 'center3') {
+                            script += `place(win, ${screenVar}, 0.33, 0.34, 0, 1) -- Center third`;
+                        } else if (zone === 'right3') {
+                            script += `place(win, ${screenVar}, 0.67, 0.33, 0, 1) -- Right third`;
+                        }
+                        
+                        script += `
+          break
+        end
+      end`;
+                    }
+                });
+            });
+
+            script += `
+    end)
+  end)
+end)
+`;
+            
+            return script;
+        }
   -- Close all apps except essentials
   local toKeep = {
     ["Hammerspoon"]=true,
