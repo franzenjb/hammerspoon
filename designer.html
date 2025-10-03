@@ -16,39 +16,41 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
             line-height: 1.6;
-            padding: 20px;
             margin: 0;
-            min-height: 100vh;
-            overflow-x: auto;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .container {
             max-width: 1600px;
             margin: 0 auto;
-            height: calc(100vh - 40px);
+            height: 100vh;
             display: flex;
             flex-direction: column;
+            box-sizing: border-box;
+            padding: 20px;
         }
 
         .header {
             text-align: center;
             color: white;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             flex-shrink: 0;
         }
 
         .header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
+            font-size: 2rem;
+            margin-bottom: 5px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .main-content {
             display: grid;
             grid-template-columns: 1fr 400px;
-            gap: 30px;
+            gap: 20px;
             flex: 1;
-            height: calc(100vh - 280px);
+            min-height: 0;
             overflow: hidden;
         }
 
@@ -56,8 +58,10 @@
         .workspace-designer {
             background: rgba(255,255,255,0.95);
             border-radius: 15px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow-y: auto;
+            height: 100%;
         }
 
         .designer-title {
@@ -403,8 +407,8 @@
         .keystroke-display {
             background: rgba(255,255,255,0.95);
             border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 12px;
+            margin-bottom: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             text-align: center;
             flex-shrink: 0;
@@ -483,25 +487,38 @@
         .bottom-instructions {
             background: rgba(255,255,255,0.95);
             border-radius: 15px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-top: 20px;
+            margin-top: 15px;
             flex-shrink: 0;
-            max-height: 200px;
+            max-height: 150px;
             overflow-y: auto;
         }
 
         @media (max-width: 1200px) {
+            body {
+                height: auto;
+                min-height: 100vh;
+                overflow: auto;
+            }
+            
             .container {
                 height: auto;
-                min-height: calc(100vh - 40px);
+                min-height: 100vh;
+                padding: 15px;
             }
             
             .main-content {
                 grid-template-columns: 1fr;
                 grid-template-rows: auto auto;
+                gap: 15px;
                 height: auto;
-                min-height: calc(100vh - 300px);
+                min-height: 0;
+            }
+            
+            .workspace-designer {
+                height: auto;
+                overflow-y: visible;
             }
             
             .sidebar {
@@ -510,6 +527,7 @@
             
             .bottom-instructions {
                 max-height: none;
+                margin-top: 10px;
             }
         }
     </style>
