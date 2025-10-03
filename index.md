@@ -1,0 +1,1 @@
+---\nlayout: default\n---\n\n# Hammerspoon Workspace Automator\n\nThis site documents the Hammerspoon automation setup.\n\n- View the full README: [README.md](README.md)\n
