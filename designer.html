@@ -13,287 +13,303 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
-            color: #fff;
-            overflow-x: auto;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
         }
 
         .container {
-            min-width: 1200px;
-            padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
         }
 
         .header {
             text-align: center;
+            color: white;
             margin-bottom: 30px;
         }
 
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .workspace-designer {
-            display: flex;
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
             gap: 30px;
-            margin-bottom: 30px;
+            height: calc(100vh - 150px);
         }
 
-        .monitors-area {
-            flex: 1;
-            background: rgba(255,255,255,0.1);
+        /* WORKSPACE DESIGNER - 50% of screen */
+        .workspace-designer {
+            background: rgba(255,255,255,0.95);
             border-radius: 15px;
             padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .designer-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #4a5568;
+        }
+
+        .monitors-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 20px;
+            height: 100%;
             min-height: 600px;
         }
 
-        .monitor-setup {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            height: 100%;
-            position: relative;
-        }
-
-        .monitor {
-            border: 3px solid #68d391;
+        .monitor-container {
+            background: #f7fafc;
+            border: 3px solid #4a5568;
             border-radius: 12px;
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            position: relative;
+            padding: 15px;
             display: flex;
             flex-direction: column;
+        }
+
+        .monitor-container:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Different monitor sizes */
+        .monitor1 { grid-column: 1; grid-row: 1; }
+        .monitor2 { grid-column: 2; grid-row: 1; }
+        .monitor3 { grid-column: 1 / 3; grid-row: 2; }
+        .monitor4 { 
+            grid-column: 1 / 3; 
+            grid-row: 3; 
+            height: 150px;
+        }
+
+        .monitor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .monitor-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #2d3748;
+        }
+
+        .split-selector {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: white;
+            font-size: 0.9rem;
+        }
+
+        .monitor-zones {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .drop-zone {
+            background: white;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            color: #718096;
             transition: all 0.3s ease;
             cursor: pointer;
-        }
-
-        .monitor:hover {
-            border-color: #48bb78;
-            box-shadow: 0 10px 25px rgba(104, 211, 145, 0.3);
-        }
-
-        .monitor1 { width: 120px; height: 180px; }
-        .monitor2 { width: 120px; height: 180px; }
-        .monitor3 { width: 280px; height: 160px; }
-        .monitor4 { width: 160px; height: 100px; }
-
-        .monitor-label {
-            position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #4a5568;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .monitor-content {
-            flex: 1;
-            padding: 10px;
+            min-height: 80px;
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            position: relative;
-        }
-
-        .app-slot {
-            border: 2px dashed #cbd5e0;
-            border-radius: 6px;
-            padding: 8px;
-            min-height: 40px;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
-            color: #666;
-            transition: all 0.3s ease;
+            align-items: center;
             position: relative;
         }
 
-        .app-slot.occupied {
-            border: 2px solid #4299e1;
-            background: #ebf8ff;
-            color: #2b6cb0;
+        .drop-zone:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .drop-zone.has-app {
+            border-style: solid;
+            border-color: #667eea;
+            background: #e6f3ff;
+        }
+
+        .app-in-zone {
             font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 5px;
         }
 
-        .app-slot.drag-over {
-            border-color: #48bb78;
-            background: #f0fff4;
+        .zone-selector {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: white;
+            font-size: 0.9rem;
+            margin-top: 5px;
         }
 
-        .app-slot .remove-btn {
+        .remove-app {
             position: absolute;
-            top: 2px;
-            right: 2px;
+            top: 5px;
+            right: 5px;
             background: #e53e3e;
             color: white;
             border: none;
             border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 10px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
-            display: none;
+            font-size: 12px;
         }
 
-        .app-slot.occupied:hover .remove-btn {
-            display: block;
+        /* Ultrawide splits */
+        .monitor3 .monitor-zones.split-2 {
+            flex-direction: row;
         }
 
-        .apps-panel {
-            width: 300px;
-            background: rgba(255,255,255,0.1);
+        .monitor3 .monitor-zones.split-3 {
+            flex-direction: row;
+        }
+
+        /* RIGHT SIDEBAR */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .app-library {
+            background: rgba(255,255,255,0.95);
             border-radius: 15px;
-            padding: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            flex: 1;
         }
 
-        .apps-section {
-            margin-bottom: 25px;
-        }
-
-        .apps-section h3 {
+        .library-title {
+            font-size: 1.3rem;
+            font-weight: bold;
             margin-bottom: 15px;
-            color: #68d391;
-            font-size: 1.1rem;
+            color: #4a5568;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
         .app-item {
-            background: #4a5568;
-            border: 2px solid #68d391;
+            background: #667eea;
+            color: white;
+            padding: 12px;
             border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 8px;
+            text-align: center;
             cursor: grab;
-            transition: all 0.3s ease;
-            user-select: none;
+            font-size: 0.9rem;
+            transition: transform 0.2s ease;
         }
 
         .app-item:hover {
-            background: #68d391;
-            color: #2d3748;
-            transform: translateX(5px);
+            transform: scale(1.05);
         }
 
         .app-item:active {
             cursor: grabbing;
         }
 
-        .app-item.dragging {
+        .generated-script {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-height: 350px;
+        }
+
+        .script-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #4a5568;
+        }
+
+        .code-preview {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.8rem;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        /* Drag and Drop Effects */
+        .dragging {
             opacity: 0.5;
             transform: rotate(5deg);
         }
 
-        .controls {
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
+        .drag-over {
+            border-color: #38a169 !important;
+            background: #f0fff4 !important;
+            border-style: solid !important;
         }
 
-        .btn {
-            background: #68d391;
-            color: #2d3748;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            background: #48bb78;
-            transform: translateY(-2px);
-        }
-
-        .output-section {
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 20px;
-        }
-
-        .code-output {
-            background: #1a202c;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .position-controls {
-            display: none;
-            position: absolute;
-            background: #2d3748;
-            border: 2px solid #68d391;
-            border-radius: 8px;
-            padding: 10px;
-            z-index: 1000;
-            min-width: 200px;
-        }
-
-        .position-controls input {
-            width: 60px;
-            padding: 4px;
-            margin: 2px;
-            border: 1px solid #4a5568;
-            border-radius: 4px;
-        }
-
-        .split-options {
-            display: flex;
-            gap: 5px;
-            margin-top: 5px;
-        }
-
-        .split-btn {
-            background: #4a5568;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            cursor: pointer;
-        }
-
-        .split-btn:hover {
-            background: #68d391;
-            color: #2d3748;
-        }
-
-        .custom-app {
-            display: flex;
-            gap: 5px;
-            margin-top: 10px;
-        }
-
-        .custom-app input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #4a5568;
-            border-radius: 4px;
-            background: #2d3748;
-            color: white;
-        }
-
-        .add-custom-btn {
-            background: #68d391;
-            color: #2d3748;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+            }
         }
     </style>
 </head>
@@ -301,261 +317,409 @@
     <div class="container">
         <div class="header">
             <h1>🖥️ Hammerspoon Workspace Designer</h1>
-            <p>Drag applications to your monitors and generate custom configurations</p>
+            <p>Drag applications onto monitors • Configure splits • Generate Lua script</p>
         </div>
 
-        <div class="controls">
-            <button class="btn" onclick="generateCode()">🔧 Generate Lua Code</button>
-            <button class="btn" onclick="clearAll()">🗑️ Clear All</button>
-            <button class="btn" onclick="loadExample()">📋 Load Example</button>
-            <button class="btn" onclick="exportConfig()">💾 Export Config</button>
-        </div>
-
-        <div class="workspace-designer">
-            <div class="monitors-area">
-                <div class="monitor-setup">
-                    <div class="monitor monitor1" data-monitor="1">
-                        <div class="monitor-label">Monitor 1<br>Samsung LU28R55<br>(Vertical)</div>
-                        <div class="monitor-content" data-slots="2">
-                            <div class="app-slot" data-position="top">Drop app here (top half)</div>
-                            <div class="app-slot" data-position="bottom">Drop app here (bottom half)</div>
+        <div class="main-content">
+            <!-- WORKSPACE DESIGNER -->
+            <div class="workspace-designer">
+                <div class="designer-title">Visual Workspace Configuration</div>
+                <div class="monitors-grid">
+                    
+                    <!-- Monitor 1 -->
+                    <div class="monitor-container monitor1">
+                        <div class="monitor-header">
+                            <div class="monitor-name">Monitor 1 (Samsung LU28R55)</div>
+                            <select class="split-selector" data-monitor="1">
+                                <option value="single">Single App</option>
+                                <option value="split-2" selected>Top/Bottom Split</option>
+                            </select>
+                        </div>
+                        <div class="monitor-zones split-2">
+                            <div class="drop-zone" data-monitor="1" data-zone="top">
+                                <div>Drop app here or click to select</div>
+                                <div style="font-size: 0.8rem; color: #999;">Top Half</div>
+                                <select class="zone-selector" data-monitor="1" data-zone="top">
+                                    <option value="">Choose an app...</option>
+                                </select>
+                            </div>
+                            <div class="drop-zone" data-monitor="1" data-zone="bottom">
+                                <div>Drop app here or click to select</div>
+                                <div style="font-size: 0.8rem; color: #999;">Bottom Half</div>
+                                <select class="zone-selector" data-monitor="1" data-zone="bottom">
+                                    <option value="">Choose an app...</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="monitor monitor2" data-monitor="2">
-                        <div class="monitor-label">Monitor 2<br>Samsung LU28R55<br>(Vertical)</div>
-                        <div class="monitor-content" data-slots="2">
-                            <div class="app-slot" data-position="top">Drop app here (top half)</div>
-                            <div class="app-slot" data-position="bottom">Drop app here (bottom half)</div>
+                    <!-- Monitor 2 -->
+                    <div class="monitor-container monitor2">
+                        <div class="monitor-header">
+                            <div class="monitor-name">Monitor 2 (Samsung LU28R55)</div>
+                            <select class="split-selector" data-monitor="2">
+                                <option value="single">Single App</option>
+                                <option value="split-2" selected>Top/Bottom Split</option>
+                            </select>
+                        </div>
+                        <div class="monitor-zones split-2">
+                            <div class="drop-zone" data-monitor="2" data-zone="top">
+                                <div>Drop app here or click to select</div>
+                                <div style="font-size: 0.8rem; color: #999;">Top Half</div>
+                                <select class="zone-selector" data-monitor="2" data-zone="top">
+                                    <option value="">Choose an app...</option>
+                                </select>
+                            </div>
+                            <div class="drop-zone" data-monitor="2" data-zone="bottom">
+                                <div>Drop app here or click to select</div>
+                                <div style="font-size: 0.8rem; color: #999;">Bottom Half</div>
+                                <select class="zone-selector" data-monitor="2" data-zone="bottom">
+                                    <option value="">Choose an app...</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="monitor monitor3" data-monitor="3">
-                        <div class="monitor-label">Monitor 3<br>LG UltraWide</div>
-                        <div class="monitor-content" data-slots="1">
-                            <div class="app-slot" data-position="fullscreen">Drop app here (fullscreen)</div>
+                    <!-- Monitor 3 (Ultrawide) -->
+                    <div class="monitor-container monitor3">
+                        <div class="monitor-header">
+                            <div class="monitor-name">Monitor 3 (LG UltraWide)</div>
+                            <select class="split-selector" data-monitor="3">
+                                <option value="single" selected>Single App (Fullscreen)</option>
+                                <option value="split-2">50/50 Split</option>
+                                <option value="split-3">1/3 • 1/3 • 1/3 Split</option>
+                            </select>
+                        </div>
+                        <div class="monitor-zones single">
+                            <div class="drop-zone" data-monitor="3" data-zone="full">
+                                <div>Drop app here or click to select</div>
+                                <div style="font-size: 0.8rem; color: #999;">Fullscreen</div>
+                                <select class="zone-selector" data-monitor="3" data-zone="full">
+                                    <option value="">Choose an app...</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="monitor monitor4" data-monitor="4">
-                        <div class="monitor-label">Monitor 4<br>MacBook Retina</div>
-                        <div class="monitor-content" data-slots="1">
-                            <div class="app-slot" data-position="fullscreen">Drop app here (fullscreen)</div>
+                    <!-- Monitor 4 (MacBook) -->
+                    <div class="monitor-container monitor4">
+                        <div class="monitor-header">
+                            <div class="monitor-name">Monitor 4 (MacBook Retina)</div>
+                            <select class="split-selector" data-monitor="4">
+                                <option value="single" selected>Single App</option>
+                                <option value="split-2">Left/Right Split</option>
+                            </select>
+                        </div>
+                        <div class="monitor-zones single">
+                            <div class="drop-zone" data-monitor="4" data-zone="full">
+                                <div>Drop app here or click to select</div>
+                                <div style="font-size: 0.8rem; color: #999;">Fullscreen</div>
+                                <select class="zone-selector" data-monitor="4" data-zone="full">
+                                    <option value="">Choose an app...</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
 
-            <div class="apps-panel">
-                <div class="apps-section">
-                    <h3>📧 Productivity Apps</h3>
-                    <div class="app-item" draggable="true" data-app="Microsoft Outlook">Microsoft Outlook</div>
-                    <div class="app-item" draggable="true" data-app="Microsoft Teams">Microsoft Teams</div>
-                    <div class="app-item" draggable="true" data-app="Notion">Notion</div>
-                    <div class="app-item" draggable="true" data-app="Slack">Slack</div>
-                    <div class="app-item" draggable="true" data-app="Discord">Discord</div>
+            <!-- SIDEBAR -->
+            <div class="sidebar">
+                <!-- App Library -->
+                <div class="app-library">
+                    <div class="library-title">📱 Application Library</div>
+                    <div class="app-grid">
+                        <div class="app-item" draggable="true" data-app="Microsoft Outlook">Outlook</div>
+                        <div class="app-item" draggable="true" data-app="Microsoft Teams">Teams</div>
+                        <div class="app-item" draggable="true" data-app="Google Chrome">Chrome</div>
+                        <div class="app-item" draggable="true" data-app="Notion">Notion</div>
+                        <div class="app-item" draggable="true" data-app="Terminal">Terminal</div>
+                        <div class="app-item" draggable="true" data-app="Hammerspoon">Console</div>
+                        <div class="app-item" draggable="true" data-app="Visual Studio Code">VS Code</div>
+                        <div class="app-item" draggable="true" data-app="Slack">Slack</div>
+                        <div class="app-item" draggable="true" data-app="Discord">Discord</div>
+                        <div class="app-item" draggable="true" data-app="Spotify">Spotify</div>
+                        <div class="app-item" draggable="true" data-app="Finder">Finder</div>
+                        <div class="app-item" draggable="true" data-app="Safari">Safari</div>
+                    </div>
                 </div>
 
-                <div class="apps-section">
-                    <h3>🌐 Browsers & Web</h3>
-                    <div class="app-item" draggable="true" data-app="Google Chrome">Google Chrome</div>
-                    <div class="app-item" draggable="true" data-app="Safari">Safari</div>
-                    <div class="app-item" draggable="true" data-app="Firefox">Firefox</div>
-                </div>
-
-                <div class="apps-section">
-                    <h3>⚙️ Development</h3>
-                    <div class="app-item" draggable="true" data-app="Terminal">Terminal</div>
-                    <div class="app-item" draggable="true" data-app="iTerm2">iTerm2</div>
-                    <div class="app-item" draggable="true" data-app="Visual Studio Code">VS Code</div>
-                    <div class="app-item" draggable="true" data-app="Xcode">Xcode</div>
-                </div>
-
-                <div class="apps-section">
-                    <h3>🎨 Creative</h3>
-                    <div class="app-item" draggable="true" data-app="Photoshop">Photoshop</div>
-                    <div class="app-item" draggable="true" data-app="Figma">Figma</div>
-                    <div class="app-item" draggable="true" data-app="Sketch">Sketch</div>
-                </div>
-
-                <div class="apps-section">
-                    <h3>➕ Custom App</h3>
-                    <div class="custom-app">
-                        <input type="text" id="customAppName" placeholder="App name">
-                        <button class="add-custom-btn" onclick="addCustomApp()">Add</button>
+                <!-- Generated Script -->
+                <div class="generated-script">
+                    <div class="script-title">⚡ Generated Lua Script</div>
+                    <div class="code-preview" id="generatedCode">
+-- Configure your workspace above
+-- Script will generate automatically
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="copyScript()">📋 Copy Script</button>
+                        <button class="btn btn-secondary" onclick="downloadScript()">💾 Download</button>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="output-section">
-            <h3>Generated Lua Configuration</h3>
-            <div class="code-output" id="codeOutput">-- Drag applications to monitors above to generate your custom Hammerspoon configuration</div>
         </div>
     </div>
 
     <script>
-        let draggedApp = null;
-        let workspaceConfig = {};
+        // Workspace configuration
+        let workspaceConfig = {
+            monitor1: { split: 'split-2', apps: { top: null, bottom: null } },
+            monitor2: { split: 'split-2', apps: { top: null, bottom: null } },
+            monitor3: { split: 'single', apps: { full: null } },
+            monitor4: { split: 'single', apps: { full: null } }
+        };
+
+        // Available applications
+        const apps = [
+            'Microsoft Outlook', 'Microsoft Teams', 'Google Chrome', 'Notion',
+            'Terminal', 'Hammerspoon', 'Visual Studio Code', 'Slack',
+            'Discord', 'Spotify', 'Finder', 'Safari', 'iTerm2', 'Firefox',
+            'Photoshop', 'Figma', 'Sketch', 'Xcode'
+        ];
 
         // Initialize drag and drop
         document.addEventListener('DOMContentLoaded', function() {
             initializeDragAndDrop();
+            initializeSplitSelectors();
+            populateDropdowns();
+            generateScript();
         });
+
+        function populateDropdowns() {
+            document.querySelectorAll('.zone-selector').forEach(select => {
+                select.innerHTML = '<option value="">Choose an app...</option>';
+                apps.forEach(app => {
+                    select.innerHTML += `<option value="${app}">${app}</option>`;
+                });
+                
+                select.addEventListener('change', function() {
+                    if (this.value) {
+                        const monitor = this.dataset.monitor;
+                        const zone = this.dataset.zone;
+                        assignAppToZone(monitor, zone, this.value);
+                    }
+                });
+            });
+        }
 
         function initializeDragAndDrop() {
             // Make app items draggable
-            document.querySelectorAll('.app-item').forEach(item => {
+            const appItems = document.querySelectorAll('.app-item');
+            appItems.forEach(item => {
                 item.addEventListener('dragstart', handleDragStart);
                 item.addEventListener('dragend', handleDragEnd);
             });
 
-            // Make app slots droppable
-            document.querySelectorAll('.app-slot').forEach(slot => {
-                slot.addEventListener('dragover', handleDragOver);
-                slot.addEventListener('drop', handleDrop);
-                slot.addEventListener('dragleave', handleDragLeave);
+            // Make drop zones droppable
+            const dropZones = document.querySelectorAll('.drop-zone');
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragleave', handleDragLeave);
             });
         }
 
         function handleDragStart(e) {
-            draggedApp = {
-                name: e.target.dataset.app,
-                element: e.target
-            };
+            e.dataTransfer.setData('text/plain', e.target.dataset.app);
             e.target.classList.add('dragging');
         }
 
         function handleDragEnd(e) {
             e.target.classList.remove('dragging');
-            draggedApp = null;
         }
 
         function handleDragOver(e) {
             e.preventDefault();
-            e.target.classList.add('drag-over');
+            e.currentTarget.classList.add('drag-over');
         }
 
         function handleDragLeave(e) {
-            e.target.classList.remove('drag-over');
+            e.currentTarget.classList.remove('drag-over');
         }
 
         function handleDrop(e) {
             e.preventDefault();
-            e.target.classList.remove('drag-over');
+            const app = e.dataTransfer.getData('text/plain');
+            const monitor = e.currentTarget.dataset.monitor;
+            const zone = e.currentTarget.dataset.zone;
             
-            if (draggedApp && !e.target.classList.contains('occupied')) {
-                const monitor = e.target.closest('.monitor').dataset.monitor;
-                const position = e.target.dataset.position;
-                
-                // Add app to slot
-                e.target.textContent = draggedApp.name;
-                e.target.classList.add('occupied');
-                e.target.innerHTML = `${draggedApp.name}<button class="remove-btn" onclick="removeApp(this)">×</button>`;
-                
-                // Store in config
-                if (!workspaceConfig[monitor]) workspaceConfig[monitor] = {};
-                workspaceConfig[monitor][position] = draggedApp.name;
-                
-                generateCode();
+            assignAppToZone(monitor, zone, app);
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function assignAppToZone(monitor, zone, app) {
+            const monitorKey = `monitor${monitor}`;
+            workspaceConfig[monitorKey].apps[zone] = app;
+            
+            updateZoneDisplay(monitor, zone, app);
+            updateDropdown(monitor, zone, app);
+            generateScript();
+        }
+
+        function updateZoneDisplay(monitor, zone, app) {
+            const zoneElement = document.querySelector(`[data-monitor="${monitor}"][data-zone="${zone}"]`);
+            zoneElement.classList.add('has-app');
+            zoneElement.innerHTML = `
+                <div class="app-in-zone">${app}</div>
+                <button class="remove-app" onclick="removeApp('${monitor}', '${zone}')">&times;</button>
+            `;
+        }
+
+        function updateDropdown(monitor, zone, app) {
+            const dropdown = document.querySelector(`select[data-monitor="${monitor}"][data-zone="${zone}"]`);
+            if (dropdown) {
+                dropdown.value = app;
             }
         }
 
-        function removeApp(btn) {
-            const slot = btn.parentElement;
-            const monitor = slot.closest('.monitor').dataset.monitor;
-            const position = slot.dataset.position;
+        function removeApp(monitor, zone) {
+            const monitorKey = `monitor${monitor}`;
+            workspaceConfig[monitorKey].apps[zone] = null;
             
-            slot.classList.remove('occupied');
-            slot.innerHTML = `Drop app here (${position === 'fullscreen' ? 'fullscreen' : position + ' half'})`;
+            const zoneElement = document.querySelector(`[data-monitor="${monitor}"][data-zone="${zone}"]`);
+            zoneElement.classList.remove('has-app');
             
-            // Remove from config
-            if (workspaceConfig[monitor] && workspaceConfig[monitor][position]) {
-                delete workspaceConfig[monitor][position];
-                if (Object.keys(workspaceConfig[monitor]).length === 0) {
-                    delete workspaceConfig[monitor];
-                }
-            }
-            
-            generateCode();
-        }
-
-        function addCustomApp() {
-            const input = document.getElementById('customAppName');
-            const appName = input.value.trim();
-            
-            if (appName) {
-                const appsSection = input.closest('.apps-section');
-                const newApp = document.createElement('div');
-                newApp.className = 'app-item';
-                newApp.draggable = true;
-                newApp.dataset.app = appName;
-                newApp.textContent = appName;
-                
-                newApp.addEventListener('dragstart', handleDragStart);
-                newApp.addEventListener('dragend', handleDragEnd);
-                
-                appsSection.insertBefore(newApp, appsSection.querySelector('.custom-app'));
-                input.value = '';
-            }
-        }
-
-        function clearAll() {
-            document.querySelectorAll('.app-slot.occupied').forEach(slot => {
-                slot.classList.remove('occupied');
-                const position = slot.dataset.position;
-                slot.innerHTML = `Drop app here (${position === 'fullscreen' ? 'fullscreen' : position + ' half'})`;
-            });
-            workspaceConfig = {};
-            generateCode();
-        }
-
-        function loadExample() {
-            clearAll();
-            
-            // Load the original example configuration
-            const examples = {
-                '1': { 'top': 'Microsoft Outlook', 'bottom': 'Microsoft Teams' },
-                '2': { 'top': 'Terminal', 'bottom': 'Terminal' },
-                '3': { 'fullscreen': 'Google Chrome' },
-                '4': { 'fullscreen': 'Notion' }
+            const zoneNames = {
+                top: 'Top Half', bottom: 'Bottom Half', full: 'Fullscreen',
+                left: 'Left Half', right: 'Right Half', left3: '1/3', center3: '1/3', right3: '1/3'
             };
             
-            Object.keys(examples).forEach(monitor => {
-                Object.keys(examples[monitor]).forEach(position => {
-                    const slot = document.querySelector(`[data-monitor="${monitor}"] [data-position="${position}"]`);
-                    if (slot) {
-                        const appName = examples[monitor][position];
-                        slot.textContent = appName;
-                        slot.classList.add('occupied');
-                        slot.innerHTML = `${appName}<button class="remove-btn" onclick="removeApp(this)">×</button>`;
-                    }
-                });
+            zoneElement.innerHTML = `
+                <div>Drop app here or click to select</div>
+                <div style="font-size: 0.8rem; color: #999;">${zoneNames[zone] || zone}</div>
+                <select class="zone-selector" data-monitor="${monitor}" data-zone="${zone}">
+                    <option value="">Choose an app...</option>
+                </select>
+            `;
+            
+            // Repopulate dropdown
+            const newSelect = zoneElement.querySelector('.zone-selector');
+            apps.forEach(app => {
+                newSelect.innerHTML += `<option value="${app}">${app}</option>`;
             });
             
-            workspaceConfig = examples;
-            generateCode();
+            newSelect.addEventListener('change', function() {
+                if (this.value) {
+                    assignAppToZone(this.dataset.monitor, this.dataset.zone, this.value);
+                }
+            });
+            
+            generateScript();
         }
 
-        function generateCode() {
-            if (Object.keys(workspaceConfig).length === 0) {
-                document.getElementById('codeOutput').textContent = '-- Drag applications to monitors above to generate your custom Hammerspoon configuration';
-                return;
-            }
+        function initializeSplitSelectors() {
+            const selectors = document.querySelectorAll('.split-selector');
+            selectors.forEach(selector => {
+                selector.addEventListener('change', function() {
+                    const monitor = this.dataset.monitor;
+                    const split = this.value;
+                    updateMonitorSplit(monitor, split);
+                });
+            });
+        }
 
-            let luaCode = `-- Custom Hammerspoon Workspace Configuration
+        function updateMonitorSplit(monitor, split) {
+            const monitorKey = `monitor${monitor}`;
+            workspaceConfig[monitorKey].split = split;
+            
+            const zonesContainer = document.querySelector(`.monitor${monitor} .monitor-zones`);
+            zonesContainer.className = `monitor-zones ${split}`;
+            
+            // Clear current zones and create new ones
+            zonesContainer.innerHTML = '';
+            
+            if (split === 'single') {
+                zonesContainer.innerHTML = `
+                    <div class="drop-zone" data-monitor="${monitor}" data-zone="full">
+                        <div>Drop app here or click to select</div>
+                        <div style="font-size: 0.8rem; color: #999;">Fullscreen</div>
+                        <select class="zone-selector" data-monitor="${monitor}" data-zone="full">
+                            <option value="">Choose an app...</option>
+                        </select>
+                    </div>
+                `;
+                workspaceConfig[monitorKey].apps = { full: null };
+            } else if (split === 'split-2') {
+                if (monitor === '4') {
+                    // MacBook - left/right split
+                    zonesContainer.innerHTML = `
+                        <div class="drop-zone" data-monitor="${monitor}" data-zone="left">
+                            <div>Drop app here or click to select</div>
+                            <div style="font-size: 0.8rem; color: #999;">Left Half</div>
+                            <select class="zone-selector" data-monitor="${monitor}" data-zone="left">
+                                <option value="">Choose an app...</option>
+                            </select>
+                        </div>
+                        <div class="drop-zone" data-monitor="${monitor}" data-zone="right">
+                            <div>Drop app here or click to select</div>
+                            <div style="font-size: 0.8rem; color: #999;">Right Half</div>
+                            <select class="zone-selector" data-monitor="${monitor}" data-zone="right">
+                                <option value="">Choose an app...</option>
+                            </select>
+                        </div>
+                    `;
+                    workspaceConfig[monitorKey].apps = { left: null, right: null };
+                } else {
+                    // Vertical monitors or ultrawide - top/bottom or left/right
+                    zonesContainer.innerHTML = `
+                        <div class="drop-zone" data-monitor="${monitor}" data-zone="top">
+                            <div>Drop app here or click to select</div>
+                            <div style="font-size: 0.8rem; color: #999;">Top Half</div>
+                            <select class="zone-selector" data-monitor="${monitor}" data-zone="top">
+                                <option value="">Choose an app...</option>
+                            </select>
+                        </div>
+                        <div class="drop-zone" data-monitor="${monitor}" data-zone="bottom">
+                            <div>Drop app here or click to select</div>
+                            <div style="font-size: 0.8rem; color: #999;">Bottom Half</div>
+                            <select class="zone-selector" data-monitor="${monitor}" data-zone="bottom">
+                                <option value="">Choose an app...</option>
+                            </select>
+                        </div>
+                    `;
+                    workspaceConfig[monitorKey].apps = { top: null, bottom: null };
+                }
+            } else if (split === 'split-3') {
+                zonesContainer.innerHTML = `
+                    <div class="drop-zone" data-monitor="${monitor}" data-zone="left3">
+                        <div>Drop app here or click to select</div>
+                        <div style="font-size: 0.8rem; color: #999;">1/3</div>
+                        <select class="zone-selector" data-monitor="${monitor}" data-zone="left3">
+                            <option value="">Choose an app...</option>
+                        </select>
+                    </div>
+                    <div class="drop-zone" data-monitor="${monitor}" data-zone="center3">
+                        <div>Drop app here or click to select</div>
+                        <div style="font-size: 0.8rem; color: #999;">1/3</div>
+                        <select class="zone-selector" data-monitor="${monitor}" data-zone="center3">
+                            <option value="">Choose an app...</option>
+                        </select>
+                    </div>
+                    <div class="drop-zone" data-monitor="${monitor}" data-zone="right3">
+                        <div>Drop app here or click to select</div>
+                        <div style="font-size: 0.8rem; color: #999;">1/3</div>
+                        <select class="zone-selector" data-monitor="${monitor}" data-zone="right3">
+                            <option value="">Choose an app...</option>
+                        </select>
+                    </div>
+                `;
+                workspaceConfig[monitorKey].apps = { left3: null, center3: null, right3: null };
+            }
+            
+            // Re-initialize drag and drop for new zones
+            initializeDragAndDrop();
+            populateDropdowns();
+            generateScript();
+        }
+
+        function generateScript() {
+            let script = `-- Hammerspoon Workspace Configuration
 -- Generated by Workspace Designer
 -- Trigger with: cmd+alt+ctrl+W
 
 hs.hotkey.bind({"cmd","alt","ctrl"}, "W", function()
-  --------------------------------------------------------------------
-  -- STEP 1: Relaunch menu-bar apps (never closed)
-  --------------------------------------------------------------------
-  hs.application.launchOrFocus("Raycast")
-  hs.application.launchOrFocus("Wispr Flow")
-  hs.application.launchOrFocus("Hand Mirror")
-
-  -- Close everything else (except essentials)
+  -- Close all apps except essentials
   local toKeep = {
     ["Hammerspoon"]=true,
     ["Finder"]=true,
@@ -563,121 +727,128 @@ hs.hotkey.bind({"cmd","alt","ctrl"}, "W", function()
     ["Wispr Flow"]=true,
     ["Hand Mirror"]=true
   }
+  
   for _, app in ipairs(hs.application.runningApplications()) do
     local name = app:name()
     if name and not toKeep[name] then app:kill() end
   end
 
-  --------------------------------------------------------------------
-  -- STEP 2: Launch applications
-  --------------------------------------------------------------------
+  -- Wait and launch apps
   hs.timer.doAfter(3, function()
     local screens = {
       one   = hs.screen.find(5), -- Monitor 1
       two   = hs.screen.find(2), -- Monitor 2  
-      three = hs.screen.find(3), -- Monitor 3
-      four  = hs.screen.find(1)  -- Monitor 4
+      three = hs.screen.find(3), -- Monitor 3 (Ultrawide)
+      four  = hs.screen.find(1)  -- Monitor 4 (MacBook)
     }
-
+    
+    -- Launch applications
 `;
 
-            // Generate app launches
+            // Add app launches
             const allApps = new Set();
             Object.values(workspaceConfig).forEach(monitor => {
-                Object.values(monitor).forEach(app => allApps.add(app));
+                Object.values(monitor.apps).forEach(app => {
+                    if (app) allApps.add(app);
+                });
             });
 
             allApps.forEach(app => {
-                luaCode += `    hs.application.launchOrFocus("${app}")\n`;
+                script += `    hs.application.launchOrFocus("${app}")\n`;
             });
 
-            luaCode += `
-    --------------------------------------------------------------------
-    -- STEP 3: Window arrangement
-    --------------------------------------------------------------------
+            script += `
+    -- Window arrangement
     hs.timer.doAfter(8, function()
-      local wins = hs.window.filter.default:getWindows()
-      local appWindows = {}
-
-      -- Find all windows
-      for _,w in ipairs(wins) do
-        local appName = w:application():name()
-        if not appWindows[appName] then appWindows[appName] = {} end
-        table.insert(appWindows[appName], w)
-      end
-
-      -- Helper functions
-      local function halfRows(screen, topApp, bottomApp)
-        if screen then
+      local function place(win, screen, xFrac, wFrac, yFrac, hFrac)
+        if win and screen then
           local f = screen:frame()
-          if topApp and appWindows[topApp] and appWindows[topApp][1] then
-            local win = appWindows[topApp][1]
-            win:moveToScreen(screen):setFrame({x=f.x,y=f.y,w=f.w,h=f.h/2})
-          end
-          if bottomApp and appWindows[bottomApp] then
-            local win = appWindows[bottomApp][bottomApp == topApp and 2 or 1]
-            if win then
-              win:moveToScreen(screen):setFrame({x=f.x,y=f.y+f.h/2,w=f.w,h=f.h/2})
-            end
-          end
+          win:moveToScreen(screen)
+          win:setFrame({
+            x=f.x+f.w*xFrac,
+            y=f.y+f.h*yFrac,
+            w=f.w*wFrac,
+            h=f.h*hFrac
+          })
         end
       end
-
-      local function fullscreen(screen, app)
-        if screen and app and appWindows[app] and appWindows[app][1] then
-          local win = appWindows[app][1]
-          win:moveToScreen(screen):setFrame(screen:frame())
-        end
-      end
-
-      -- Apply layout
+      
+      local wins = hs.window.filter.default:getWindows()
 `;
 
-            // Generate layout code for each monitor
-            ['1', '2', '3', '4'].forEach(monitor => {
-                if (workspaceConfig[monitor]) {
-                    const monitorApps = workspaceConfig[monitor];
-                    const screenVar = ['one', 'two', 'three', 'four'][parseInt(monitor) - 1];
-                    
-                    if (monitorApps.fullscreen) {
-                        luaCode += `      fullscreen(screens.${screenVar}, "${monitorApps.fullscreen}") -- Monitor ${monitor}\n`;
-                    } else if (monitorApps.top || monitorApps.bottom) {
-                        const topApp = monitorApps.top || 'nil';
-                        const bottomApp = monitorApps.bottom || 'nil';
-                        luaCode += `      halfRows(screens.${screenVar}, "${topApp}", "${bottomApp}") -- Monitor ${monitor}\n`;
+            // Generate window placement code for each monitor
+            ['monitor1', 'monitor2', 'monitor3', 'monitor4'].forEach((monitorKey, index) => {
+                const monitor = workspaceConfig[monitorKey];
+                const screenVar = ['screens.one', 'screens.two', 'screens.three', 'screens.four'][index];
+                
+                Object.entries(monitor.apps).forEach(([zone, app]) => {
+                    if (app) {
+                        script += `      
+      -- ${app} on Monitor ${index + 1} (${zone})
+      for _, win in ipairs(wins) do
+        if win:application():name() == "${app}" then
+          `;
+                        
+                        if (zone === 'full') {
+                            script += `place(win, ${screenVar}, 0, 1, 0, 1) -- Fullscreen`;
+                        } else if (zone === 'top') {
+                            script += `place(win, ${screenVar}, 0, 1, 0, 0.5) -- Top half`;
+                        } else if (zone === 'bottom') {
+                            script += `place(win, ${screenVar}, 0, 1, 0.5, 0.5) -- Bottom half`;
+                        } else if (zone === 'left') {
+                            script += `place(win, ${screenVar}, 0, 0.5, 0, 1) -- Left half`;
+                        } else if (zone === 'right') {
+                            script += `place(win, ${screenVar}, 0.5, 0.5, 0, 1) -- Right half`;
+                        } else if (zone === 'left3') {
+                            script += `place(win, ${screenVar}, 0, 0.33, 0, 1) -- Left third`;
+                        } else if (zone === 'center3') {
+                            script += `place(win, ${screenVar}, 0.33, 0.34, 0, 1) -- Center third`;
+                        } else if (zone === 'right3') {
+                            script += `place(win, ${screenVar}, 0.67, 0.33, 0, 1) -- Right third`;
+                        }
+                        
+                        script += `
+          break
+        end
+      end`;
                     }
-                }
+                });
             });
 
-            luaCode += `    end)
+            script += `
+    end)
   end)
 end)`;
 
-            document.getElementById('codeOutput').textContent = luaCode;
+            document.getElementById('generatedCode').textContent = script;
         }
 
-        function exportConfig() {
-            const config = {
-                timestamp: new Date().toISOString(),
-                monitors: workspaceConfig,
-                code: document.getElementById('codeOutput').textContent
-            };
-            
-            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+        function copyScript() {
+            const code = document.getElementById('generatedCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                btn.style.background = '#48bb78';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#667eea';
+                }, 2000);
+            });
+        }
+
+        function downloadScript() {
+            const code = document.getElementById('generatedCode').textContent;
+            const blob = new Blob([code], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'hammerspoon-workspace-config.json';
+            a.download = 'hammerspoon-config.lua';
             a.click();
             URL.revokeObjectURL(url);
         }
 
-        // Allow Enter key to add custom app
-        document.getElementById('customAppName').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addCustomApp();
-            }
-        });
     </script>
 </body>
 </html>
