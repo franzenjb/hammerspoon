@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hammerspoon Multi-Workspace Designer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            color: #fff;
+            overflow-x: auto;
+        }
+
+        .container {
+            min-width: 1200px;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .preset-manager {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .preset-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preset-tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .preset-tab {
+            background: #4a5568;
+            border: 2px solid #68d391;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .preset-tab.active {
+            background: #68d391;
+            color: #2d3748;
+        }
+
+        .preset-tab:hover {
+            background: #48bb78;
+            color: #2d3748;
+        }
+
+        .hotkey-config {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hotkey-display {
+            background: #1a202c;
+            color: #68d391;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-weight: bold;
+        }
+
+        .hotkey-selector {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .hotkey-selector select {
+            background: #2d3748;
+            color: white;
+            border: 1px solid #68d391;
+            border-radius: 4px;
+            padding: 5px;
+        }
+
+        .preset-name {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .preset-name input {
+            background: #2d3748;
+            color: white;
+            border: 1px solid #68d391;
+            border-radius: 4px;
+            padding: 5px 10px;
+            width: 150px;
+        }
+
+        .workspace-designer {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .monitors-area {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 600px;
+        }
+
+        .monitor-setup {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            height: 100%;
+            position: relative;
+        }
+
+        .monitor {
+            border: 3px solid #68d391;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .monitor:hover {
+            border-color: #48bb78;
+            box-shadow: 0 10px 25px rgba(104, 211, 145, 0.3);
+        }
+
+        .monitor1 { width: 120px; height: 180px; }
+        .monitor2 { width: 120px; height: 180px; }
+        .monitor3 { width: 280px; height: 160px; }
+        .monitor4 { width: 160px; height: 100px; }
+
+        .monitor-label {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4a5568;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .monitor-content {
+            flex: 1;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            position: relative;
+        }
+
+        .app-slot {
+            border: 2px dashed #cbd5e0;
+            border-radius: 6px;
+            padding: 8px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #666;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .app-slot.occupied {
+            border: 2px solid #4299e1;
+            background: #ebf8ff;
+            color: #2b6cb0;
+            font-weight: bold;
+        }
+
+        .app-slot.drag-over {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+
+        .app-slot .remove-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .app-slot.occupied:hover .remove-btn {
+            display: block;
+        }
+
+        .apps-panel {
+            width: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .apps-section {
+            margin-bottom: 25px;
+        }
+
+        .apps-section h3 {
+            margin-bottom: 15px;
+            color: #68d391;
+            font-size: 1.1rem;
+        }
+
+        .app-item {
+            background: #4a5568;
+            border: 2px solid #68d391;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .app-item:hover {
+            background: #68d391;
+            color: #2d3748;
+            transform: translateX(5px);
+        }
+
+        .app-item:active {
+            cursor: grabbing;
+        }
+
+        .app-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .controls {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: #68d391;
+            color: #2d3748;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #48bb78;
+            transform: translateY(-2px);
+        }
+
+        .btn.danger {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .btn.danger:hover {
+            background: #c53030;
+        }
+
+        .output-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .code-output {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .custom-app {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .custom-app input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #4a5568;
+            border-radius: 4px;
+            background: #2d3748;
+            color: white;
+        }
+
+        .add-custom-btn {
+            background: #68d391;
+            color: #2d3748;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .preset-info {
+            background: rgba(72, 187, 120, 0.1);
+            border: 1px solid #48bb78;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .preset-info h3 {
+            color: #68d391;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖥️ Multi-Workspace Designer</h1>
+            <p>Create multiple workspace presets with custom hotkeys</p>
+        </div>
+
+        <div class="preset-info">
+            <h3>💡 How It Works</h3>
+            <p>Create different workspace layouts, each triggered by a unique hotkey combination. Your existing <strong>Ctrl+Opt+W</strong> will remain unchanged. Add new presets like <strong>Ctrl+Opt+A</strong> for Art Mode, <strong>Ctrl+Opt+G</strong> for GIS Mode, etc.</p>
+        </div>
+
+        <div class="preset-manager">
+            <div class="preset-selector">
+                <label>Workspace Preset:</label>
+                <div class="preset-tabs">
+                    <div class="preset-tab active" data-preset="preset1">Preset 1</div>
+                    <div class="preset-tab" data-preset="preset2">Preset 2</div>
+                    <div class="preset-tab" data-preset="preset3">Preset 3</div>
+                    <div class="preset-tab" data-preset="preset4">Preset 4</div>
+                </div>
+                <button class="btn" onclick="addPreset()">+ Add Preset</button>
+            </div>
+
+            <div class="hotkey-config">
+                <label>Hotkey:</label>
+                <div class="hotkey-display">
+                    ⌘ + ⌥ + ⌃ + <span id="currentLetter">A</span>
+                </div>
+                <div class="hotkey-selector">
+                    <select id="hotkeyLetter" onchange="updateHotkey()">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="G">G</option>
+                        <option value="H">H</option>
+                        <option value="I">I</option>
+                        <option value="J">J</option>
+                        <option value="K">K</option>
+                        <option value="L">L</option>
+                        <option value="M">M</option>
+                        <option value="N">N</option>
+                        <option value="O">O</option>
+                        <option value="P">P</option>
+                        <option value="Q">Q</option>
+                        <option value="R">R</option>
+                        <option value="S">S</option>
+                        <option value="T">T</option>
+                        <option value="U">U</option>
+                        <option value="V">V</option>
+                        <option value="X">X</option>
+                        <option value="Y">Y</option>
+                        <option value="Z">Z</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="preset-name">
+                <label>Name:</label>
+                <input type="text" id="presetName" value="Work Mode" placeholder="Preset name">
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="generateAllCode()">🔧 Generate All Presets</button>
+            <button class="btn" onclick="clearCurrentPreset()">🗑️ Clear Current</button>
+            <button class="btn" onclick="duplicatePreset()">📋 Duplicate Preset</button>
+            <button class="btn danger" onclick="deletePreset()">🗑️ Delete Preset</button>
+            <button class="btn" onclick="exportAllPresets()">💾 Export All</button>
+        </div>
+
+        <div class="workspace-designer">
+            <div class="monitors-area">
+                <div class="monitor-setup">
+                    <div class="monitor monitor1" data-monitor="1">
+                        <div class="monitor-label">Monitor 1<br>Samsung LU28R55<br>(Vertical)</div>
+                        <div class="monitor-content" data-slots="2">
+                            <div class="app-slot" data-position="top">Drop app here (top half)</div>
+                            <div class="app-slot" data-position="bottom">Drop app here (bottom half)</div>
+                        </div>
+                    </div>
+
+                    <div class="monitor monitor2" data-monitor="2">
+                        <div class="monitor-label">Monitor 2<br>Samsung LU28R55<br>(Vertical)</div>
+                        <div class="monitor-content" data-slots="2">
+                            <div class="app-slot" data-position="top">Drop app here (top half)</div>
+                            <div class="app-slot" data-position="bottom">Drop app here (bottom half)</div>
+                        </div>
+                    </div>
+
+                    <div class="monitor monitor3" data-monitor="3">
+                        <div class="monitor-label">Monitor 3<br>LG UltraWide</div>
+                        <div class="monitor-content" data-slots="1">
+                            <div class="app-slot" data-position="fullscreen">Drop app here (fullscreen)</div>
+                        </div>
+                    </div>
+
+                    <div class="monitor monitor4" data-monitor="4">
+                        <div class="monitor-label">Monitor 4<br>MacBook Retina</div>
+                        <div class="monitor-content" data-slots="1">
+                            <div class="app-slot" data-position="fullscreen">Drop app here (fullscreen)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="apps-panel">
+                <div class="apps-section">
+                    <h3>📧 Productivity Apps</h3>
+                    <div class="app-item" draggable="true" data-app="Microsoft Outlook">Microsoft Outlook</div>
+                    <div class="app-item" draggable="true" data-app="Microsoft Teams">Microsoft Teams</div>
+                    <div class="app-item" draggable="true" data-app="Notion">Notion</div>
+                    <div class="app-item" draggable="true" data-app="Slack">Slack</div>
+                    <div class="app-item" draggable="true" data-app="Discord">Discord</div>
+                </div>
+
+                <div class="apps-section">
+                    <h3>🌐 Browsers & Web</h3>
+                    <div class="app-item" draggable="true" data-app="Google Chrome">Google Chrome</div>
+                    <div class="app-item" draggable="true" data-app="Safari">Safari</div>
+                    <div class="app-item" draggable="true" data-app="Firefox">Firefox</div>
+                </div>
+
+                <div class="apps-section">
+                    <h3>⚙️ Development</h3>
+                    <div class="app-item" draggable="true" data-app="Terminal">Terminal</div>
+                    <div class="app-item" draggable="true" data-app="iTerm2">iTerm2</div>
+                    <div class="app-item" draggable="true" data-app="Visual Studio Code">VS Code</div>
+                    <div class="app-item" draggable="true" data-app="Xcode">Xcode</div>
+                </div>
+
+                <div class="apps-section">
+                    <h3>🎨 Creative & GIS</h3>
+                    <div class="app-item" draggable="true" data-app="Photoshop">Photoshop</div>
+                    <div class="app-item" draggable="true" data-app="Figma">Figma</div>
+                    <div class="app-item" draggable="true" data-app="Sketch">Sketch</div>
+                    <div class="app-item" draggable="true" data-app="ArcGIS Pro">ArcGIS Pro</div>
+                    <div class="app-item" draggable="true" data-app="QGIS">QGIS</div>
+                </div>
+
+                <div class="apps-section">
+                    <h3>➕ Custom App</h3>
+                    <div class="custom-app">
+                        <input type="text" id="customAppName" placeholder="App name">
+                        <button class="add-custom-btn" onclick="addCustomApp()">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="output-section">
+            <h3>Generated Lua Configuration</h3>
+            <div class="code-output" id="codeOutput">-- Create workspace presets above to generate your multi-workspace Hammerspoon configuration</div>
+        </div>
+    </div>
+
+    <script>
+        let draggedApp = null;
+        let currentPreset = 'preset1';
+        let presets = {
+            preset1: {
+                name: 'Work Mode',
+                hotkey: 'A',
+                config: {}
+            },
+            preset2: {
+                name: 'Creative Mode',
+                hotkey: 'C',
+                config: {}
+            },
+            preset3: {
+                name: 'GIS Mode',
+                hotkey: 'G',
+                config: {}
+            },
+            preset4: {
+                name: 'Meeting Mode',
+                hotkey: 'M',
+                config: {}
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDragAndDrop();
+            loadPreset(currentPreset);
+        });
+
+        function initializeDragAndDrop() {
+            // Make app items draggable
+            document.querySelectorAll('.app-item').forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            // Make app slots droppable
+            document.querySelectorAll('.app-slot').forEach(slot => {
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('drop', handleDrop);
+                slot.addEventListener('dragleave', handleDragLeave);
+            });
+
+            // Preset tab handlers
+            document.querySelectorAll('.preset-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    switchPreset(this.dataset.preset);
+                });
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedApp = {
+                name: e.target.dataset.app,
+                element: e.target
+            };
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedApp = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.target.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.target.classList.remove('drag-over');
+            
+            if (draggedApp && !e.target.classList.contains('occupied')) {
+                const monitor = e.target.closest('.monitor').dataset.monitor;
+                const position = e.target.dataset.position;
+                
+                // Add app to slot
+                e.target.textContent = draggedApp.name;
+                e.target.classList.add('occupied');
+                e.target.innerHTML = `${draggedApp.name}<button class="remove-btn" onclick="removeApp(this)">×</button>`;
+                
+                // Store in current preset config
+                if (!presets[currentPreset].config[monitor]) presets[currentPreset].config[monitor] = {};
+                presets[currentPreset].config[monitor][position] = draggedApp.name;
+                
+                generateAllCode();
+            }
+        }
+
+        function removeApp(btn) {
+            const slot = btn.parentElement;
+            const monitor = slot.closest('.monitor').dataset.monitor;
+            const position = slot.dataset.position;
+            
+            slot.classList.remove('occupied');
+            slot.innerHTML = `Drop app here (${position === 'fullscreen' ? 'fullscreen' : position + ' half'})`;
+            
+            // Remove from current preset config
+            if (presets[currentPreset].config[monitor] && presets[currentPreset].config[monitor][position]) {
+                delete presets[currentPreset].config[monitor][position];
+                if (Object.keys(presets[currentPreset].config[monitor]).length === 0) {
+                    delete presets[currentPreset].config[monitor];
+                }
+            }
+            
+            generateAllCode();
+        }
+
+        function switchPreset(presetId) {
+            // Save current preset state
+            saveCurrentPreset();
+            
+            // Switch to new preset
+            currentPreset = presetId;
+            
+            // Update UI
+            document.querySelectorAll('.preset-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-preset="${presetId}"]`).classList.add('active');
+            
+            // Load preset
+            loadPreset(presetId);
+        }
+
+        function saveCurrentPreset() {
+            presets[currentPreset].name = document.getElementById('presetName').value;
+            presets[currentPreset].hotkey = document.getElementById('hotkeyLetter').value;
+        }
+
+        function loadPreset(presetId) {
+            const preset = presets[presetId];
+            
+            // Clear all slots
+            document.querySelectorAll('.app-slot.occupied').forEach(slot => {
+                slot.classList.remove('occupied');
+                const position = slot.dataset.position;
+                slot.innerHTML = `Drop app here (${position === 'fullscreen' ? 'fullscreen' : position + ' half'})`;
+            });
+            
+            // Load preset config
+            Object.keys(preset.config).forEach(monitor => {
+                Object.keys(preset.config[monitor]).forEach(position => {
+                    const slot = document.querySelector(`[data-monitor="${monitor}"] [data-position="${position}"]`);
+                    if (slot) {
+                        const appName = preset.config[monitor][position];
+                        slot.textContent = appName;
+                        slot.classList.add('occupied');
+                        slot.innerHTML = `${appName}<button class="remove-btn" onclick="removeApp(this)">×</button>`;
+                    }
+                });
+            });
+            
+            // Update form fields
+            document.getElementById('presetName').value = preset.name;
+            document.getElementById('hotkeyLetter').value = preset.hotkey;
+            document.getElementById('currentLetter').textContent = preset.hotkey;
+            
+            generateAllCode();
+        }
+
+        function updateHotkey() {
+            const letter = document.getElementById('hotkeyLetter').value;
+            document.getElementById('currentLetter').textContent = letter;
+            presets[currentPreset].hotkey = letter;
+            generateAllCode();
+        }
+
+        function addCustomApp() {
+            const input = document.getElementById('customAppName');
+            const appName = input.value.trim();
+            
+            if (appName) {
+                const appsSection = input.closest('.apps-section');
+                const newApp = document.createElement('div');
+                newApp.className = 'app-item';
+                newApp.draggable = true;
+                newApp.dataset.app = appName;
+                newApp.textContent = appName;
+                
+                newApp.addEventListener('dragstart', handleDragStart);
+                newApp.addEventListener('dragend', handleDragEnd);
+                
+                appsSection.insertBefore(newApp, appsSection.querySelector('.custom-app'));
+                input.value = '';
+            }
+        }
+
+        function clearCurrentPreset() {
+            document.querySelectorAll('.app-slot.occupied').forEach(slot => {
+                slot.classList.remove('occupied');
+                const position = slot.dataset.position;
+                slot.innerHTML = `Drop app here (${position === 'fullscreen' ? 'fullscreen' : position + ' half'})`;
+            });
+            presets[currentPreset].config = {};
+            generateAllCode();
+        }
+
+        function duplicatePreset() {
+            saveCurrentPreset();
+            const newId = 'preset' + (Object.keys(presets).length + 1);
+            presets[newId] = {
+                name: presets[currentPreset].name + ' Copy',
+                hotkey: presets[currentPreset].hotkey,
+                config: JSON.parse(JSON.stringify(presets[currentPreset].config))
+            };
+            
+            // Add new tab
+            const tabsContainer = document.querySelector('.preset-tabs');
+            const newTab = document.createElement('div');
+            newTab.className = 'preset-tab';
+            newTab.dataset.preset = newId;
+            newTab.textContent = 'Preset ' + (Object.keys(presets).length);
+            newTab.addEventListener('click', function() {
+                switchPreset(this.dataset.preset);
+            });
+            tabsContainer.appendChild(newTab);
+            
+            // Switch to new preset
+            switchPreset(newId);
+        }
+
+        function deletePreset() {
+            if (Object.keys(presets).length <= 1) {
+                alert('Cannot delete the last preset');
+                return;
+            }
+            
+            if (confirm('Delete this preset?')) {
+                delete presets[currentPreset];
+                document.querySelector(`[data-preset="${currentPreset}"]`).remove();
+                
+                // Switch to first available preset
+                const firstPreset = Object.keys(presets)[0];
+                switchPreset(firstPreset);
+            }
+        }
+
+        function addPreset() {
+            const newId = 'preset' + (Object.keys(presets).length + 1);
+            presets[newId] = {
+                name: 'New Preset',
+                hotkey: 'Z',
+                config: {}
+            };
+            
+            // Add new tab
+            const tabsContainer = document.querySelector('.preset-tabs');
+            const newTab = document.createElement('div');
+            newTab.className = 'preset-tab';
+            newTab.dataset.preset = newId;
+            newTab.textContent = 'Preset ' + (Object.keys(presets).length);
+            newTab.addEventListener('click', function() {
+                switchPreset(this.dataset.preset);
+            });
+            tabsContainer.appendChild(newTab);
+            
+            // Switch to new preset
+            switchPreset(newId);
+        }
+
+        function generateAllCode() {
+            saveCurrentPreset();
+            
+            let luaCode = `-- Multi-Workspace Hammerspoon Configuration
+-- Generated by Multi-Workspace Designer
+-- Your existing Ctrl+Opt+W configuration remains unchanged
+
+`;
+
+            Object.keys(presets).forEach(presetId => {
+                const preset = presets[presetId];
+                if (Object.keys(preset.config).length === 0) return;
+
+                luaCode += `-- ${preset.name} (⌘ + ⌥ + ⌃ + ${preset.hotkey})
+hs.hotkey.bind({"cmd","alt","ctrl"}, "${preset.hotkey}", function()
+  --------------------------------------------------------------------
+  -- STEP 1: Relaunch menu-bar apps (never closed)
+  --------------------------------------------------------------------
+  hs.application.launchOrFocus("Raycast")
+  hs.application.launchOrFocus("Wispr Flow")
+  hs.application.launchOrFocus("Hand Mirror")
+
+  -- Close everything else (except essentials)
+  local toKeep = {
+    ["Hammerspoon"]=true,
+    ["Finder"]=true,
+    ["Raycast"]=true,
+    ["Wispr Flow"]=true,
+    ["Hand Mirror"]=true
+  }
+  for _, app in ipairs(hs.application.runningApplications()) do
+    local name = app:name()
+    if name and not toKeep[name] then app:kill() end
+  end
+
+  --------------------------------------------------------------------
+  -- STEP 2: Launch applications
+  --------------------------------------------------------------------
+  hs.timer.doAfter(3, function()
+    local screens = {
+      one   = hs.screen.find(5), -- Monitor 1
+      two   = hs.screen.find(2), -- Monitor 2  
+      three = hs.screen.find(3), -- Monitor 3
+      four  = hs.screen.find(1)  -- Monitor 4
+    }
+
+`;
+
+                // Generate app launches for this preset
+                const allApps = new Set();
+                Object.values(preset.config).forEach(monitor => {
+                    Object.values(monitor).forEach(app => allApps.add(app));
+                });
+
+                allApps.forEach(app => {
+                    luaCode += `    hs.application.launchOrFocus("${app}")\n`;
+                });
+
+                luaCode += `
+    --------------------------------------------------------------------
+    -- STEP 3: Window arrangement
+    --------------------------------------------------------------------
+    hs.timer.doAfter(8, function()
+      local wins = hs.window.filter.default:getWindows()
+      local appWindows = {}
+
+      -- Find all windows
+      for _,w in ipairs(wins) do
+        local appName = w:application():name()
+        if not appWindows[appName] then appWindows[appName] = {} end
+        table.insert(appWindows[appName], w)
+      end
+
+      -- Helper functions
+      local function halfRows(screen, topApp, bottomApp)
+        if screen then
+          local f = screen:frame()
+          if topApp and appWindows[topApp] and appWindows[topApp][1] then
+            local win = appWindows[topApp][1]
+            win:moveToScreen(screen):setFrame({x=f.x,y=f.y,w=f.w,h=f.h/2})
+          end
+          if bottomApp and appWindows[bottomApp] then
+            local win = appWindows[bottomApp][bottomApp == topApp and 2 or 1]
+            if win then
+              win:moveToScreen(screen):setFrame({x=f.x,y=f.y+f.h/2,w=f.w,h=f.h/2})
+            end
+          end
+        end
+      end
+
+      local function fullscreen(screen, app)
+        if screen and app and appWindows[app] and appWindows[app][1] then
+          local win = appWindows[app][1]
+          win:moveToScreen(screen):setFrame(screen:frame())
+        end
+      end
+
+      -- Apply layout for ${preset.name}
+`;
+
+                // Generate layout code for each monitor in this preset
+                ['1', '2', '3', '4'].forEach(monitor => {
+                    if (preset.config[monitor]) {
+                        const monitorApps = preset.config[monitor];
+                        const screenVar = ['one', 'two', 'three', 'four'][parseInt(monitor) - 1];
+                        
+                        if (monitorApps.fullscreen) {
+                            luaCode += `      fullscreen(screens.${screenVar}, "${monitorApps.fullscreen}") -- Monitor ${monitor}\n`;
+                        } else if (monitorApps.top || monitorApps.bottom) {
+                            const topApp = monitorApps.top || 'nil';
+                            const bottomApp = monitorApps.bottom || 'nil';
+                            luaCode += `      halfRows(screens.${screenVar}, "${topApp}", "${bottomApp}") -- Monitor ${monitor}\n`;
+                        }
+                    }
+                });
+
+                luaCode += `    end)
+  end)
+end)
+
+`;
+            });
+
+            // Add summary comment
+            luaCode += `-- Summary of Hotkeys:
+`;
+            Object.keys(presets).forEach(presetId => {
+                const preset = presets[presetId];
+                if (Object.keys(preset.config).length > 0) {
+                    luaCode += `-- ⌘ + ⌥ + ⌃ + ${preset.hotkey} = ${preset.name}\n`;
+                }
+            });
+
+            document.getElementById('codeOutput').textContent = luaCode;
+        }
+
+        function exportAllPresets() {
+            saveCurrentPreset();
+            const config = {
+                timestamp: new Date().toISOString(),
+                presets: presets,
+                code: document.getElementById('codeOutput').textContent
+            };
+            
+            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'hammerspoon-multi-workspace-config.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Allow Enter key to add custom app
+        document.getElementById('customAppName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addCustomApp();
+            }
+        });
+
+        // Save preset name on input
+        document.getElementById('presetName').addEventListener('input', function() {
+            presets[currentPreset].name = this.value;
+            generateAllCode();
+        });
+    </script>
+</body>
+</html>
