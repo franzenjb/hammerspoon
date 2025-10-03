@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hammerspoon Workspace Designer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            color: #fff;
+            overflow-x: auto;
+        }
+
+        .container {
+            min-width: 1200px;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .workspace-designer {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .monitors-area {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 600px;
+        }
+
+        .monitor-setup {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            height: 100%;
+            position: relative;
+        }
+
+        .monitor {
+            border: 3px solid #68d391;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .monitor:hover {
+            border-color: #48bb78;
+            box-shadow: 0 10px 25px rgba(104, 211, 145, 0.3);
+        }
+
+        .monitor1 { width: 120px; height: 180px; }
+        .monitor2 { width: 120px; height: 180px; }
+        .monitor3 { width: 280px; height: 160px; }
+        .monitor4 { width: 160px; height: 100px; }
+
+        .monitor-label {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4a5568;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .monitor-content {
+            flex: 1;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            position: relative;
+        }
+
+        .app-slot {
+            border: 2px dashed #cbd5e0;
+            border-radius: 6px;
+            padding: 8px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #666;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .app-slot.occupied {
+            border: 2px solid #4299e1;
+            background: #ebf8ff;
+            color: #2b6cb0;
+            font-weight: bold;
+        }
+
+        .app-slot.drag-over {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+
+        .app-slot .remove-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .app-slot.occupied:hover .remove-btn {
+            display: block;
+        }
+
+        .apps-panel {
+            width: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .apps-section {
+            margin-bottom: 25px;
+        }
+
+        .apps-section h3 {
+            margin-bottom: 15px;
+            color: #68d391;
+            font-size: 1.1rem;
+        }
+
+        .app-item {
+            background: #4a5568;
+            border: 2px solid #68d391;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .app-item:hover {
+            background: #68d391;
+            color: #2d3748;
+            transform: translateX(5px);
+        }
+
+        .app-item:active {
+            cursor: grabbing;
+        }
+
+        .app-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .controls {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: #68d391;
+            color: #2d3748;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #48bb78;
+            transform: translateY(-2px);
+        }
+
+        .output-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .code-output {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .position-controls {
+            display: none;
+            position: absolute;
+            background: #2d3748;
+            border: 2px solid #68d391;
+            border-radius: 8px;
+            padding: 10px;
+            z-index: 1000;
+            min-width: 200px;
+        }
+
+        .position-controls input {
+            width: 60px;
+            padding: 4px;
+            margin: 2px;
+            border: 1px solid #4a5568;
+            border-radius: 4px;
+        }
+
+        .split-options {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .split-btn {
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        .split-btn:hover {
+            background: #68d391;
+            color: #2d3748;
+        }
+
+        .custom-app {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .custom-app input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #4a5568;
+            border-radius: 4px;
+            background: #2d3748;
+            color: white;
+        }
+
+        .add-custom-btn {
+            background: #68d391;
+            color: #2d3748;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖥️ Hammerspoon Workspace Designer</h1>
+            <p>Drag applications to your monitors and generate custom configurations</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="generateCode()">🔧 Generate Lua Code</button>
+            <button class="btn" onclick="clearAll()">🗑️ Clear All</button>
+            <button class="btn" onclick="loadExample()">📋 Load Example</button>
+            <button class="btn" onclick="exportConfig()">💾 Export Config</button>
+        </div>
+
+        <div class="workspace-designer">
+            <div class="monitors-area">
+                <div class="monitor-setup">
+                    <div class="monitor monitor1" data-monitor="1">
+                        <div class="monitor-label">Monitor 1<br>Samsung LU28R55<br>(Vertical)</div>
+                        <div class="monitor-content" data-slots="2">
+                            <div class="app-slot" data-position="top">Drop app here (top half)</div>
+                            <div class="app-slot" data-position="bottom">Drop app here (bottom half)</div>
+                        </div>
+                    </div>
+
+                    <div class="monitor monitor2" data-monitor="2">
+                        <div class="monitor-label">Monitor 2<br>Samsung LU28R55<br>(Vertical)</div>
+                        <div class="monitor-content" data-slots="2">
+                            <div class="app-slot" data-position="top">Drop app here (top half)</div>
+                            <div class="app-slot" data-position="bottom">Drop app here (bottom half)</div>
+                        </div>
+                    </div>
+
+                    <div class="monitor monitor3" data-monitor="3">
+                        <div class="monitor-label">Monitor 3<br>LG UltraWide</div>
+                        <div class="monitor-content" data-slots="1">
+                            <div class="app-slot" data-position="fullscreen">Drop app here (fullscreen)</div>
+                        </div>
+                    </div>
+
+                    <div class="monitor monitor4" data-monitor="4">
+                        <div class="monitor-label">Monitor 4<br>MacBook Retina</div>
+                        <div class="monitor-content" data-slots="1">
+                            <div class="app-slot" data-position="fullscreen">Drop app here (fullscreen)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="apps-panel">
+                <div class="apps-section">
+                    <h3>📧 Productivity Apps</h3>
+                    <div class="app-item" draggable="true" data-app="Microsoft Outlook">Microsoft Outlook</div>
+                    <div class="app-item" draggable="true" data-app="Microsoft Teams">Microsoft Teams</div>
+                    <div class="app-item" draggable="true" data-app="Notion">Notion</div>
+                    <div class="app-item" draggable="true" data-app="Slack">Slack</div>
+                    <div class="app-item" draggable="true" data-app="Discord">Discord</div>
+                </div>
+
+                <div class="apps-section">
+                    <h3>🌐 Browsers & Web</h3>
+                    <div class="app-item" draggable="true" data-app="Google Chrome">Google Chrome</div>
+                    <div class="app-item" draggable="true" data-app="Safari">Safari</div>
+                    <div class="app-item" draggable="true" data-app="Firefox">Firefox</div>
+                </div>
+
+                <div class="apps-section">
+                    <h3>⚙️ Development</h3>
+                    <div class="app-item" draggable="true" data-app="Terminal">Terminal</div>
+                    <div class="app-item" draggable="true" data-app="iTerm2">iTerm2</div>
+                    <div class="app-item" draggable="true" data-app="Visual Studio Code">VS Code</div>
+                    <div class="app-item" draggable="true" data-app="Xcode">Xcode</div>
+                </div>
+
+                <div class="apps-section">
+                    <h3>🎨 Creative</h3>
+                    <div class="app-item" draggable="true" data-app="Photoshop">Photoshop</div>
+                    <div class="app-item" draggable="true" data-app="Figma">Figma</div>
+                    <div class="app-item" draggable="true" data-app="Sketch">Sketch</div>
+                </div>
+
+                <div class="apps-section">
+                    <h3>➕ Custom App</h3>
+                    <div class="custom-app">
+                        <input type="text" id="customAppName" placeholder="App name">
+                        <button class="add-custom-btn" onclick="addCustomApp()">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="output-section">
+            <h3>Generated Lua Configuration</h3>
+            <div class="code-output" id="codeOutput">-- Drag applications to monitors above to generate your custom Hammerspoon configuration</div>
+        </div>
+    </div>
+
+    <script>
+        let draggedApp = null;
+        let workspaceConfig = {};
+
+        // Initialize drag and drop
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDragAndDrop();
+        });
+
+        function initializeDragAndDrop() {
+            // Make app items draggable
+            document.querySelectorAll('.app-item').forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            // Make app slots droppable
+            document.querySelectorAll('.app-slot').forEach(slot => {
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('drop', handleDrop);
+                slot.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedApp = {
+                name: e.target.dataset.app,
+                element: e.target
+            };
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedApp = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.target.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.target.classList.remove('drag-over');
+            
+            if (draggedApp && !e.target.classList.contains('occupied')) {
+                const monitor = e.target.closest('.monitor').dataset.monitor;
+                const position = e.target.dataset.position;
+                
+                // Add app to slot
+                e.target.textContent = draggedApp.name;
+                e.target.classList.add('occupied');
+                e.target.innerHTML = `${draggedApp.name}<button class="remove-btn" onclick="removeApp(this)">×</button>`;
+                
+                // Store in config
+                if (!workspaceConfig[monitor]) workspaceConfig[monitor] = {};
+                workspaceConfig[monitor][position] = draggedApp.name;
+                
+                generateCode();
+            }
+        }
+
+        function removeApp(btn) {
+            const slot = btn.parentElement;
+            const monitor = slot.closest('.monitor').dataset.monitor;
+            const position = slot.dataset.position;
+            
+            slot.classList.remove('occupied');
+            slot.innerHTML = `Drop app here (${position === 'fullscreen' ? 'fullscreen' : position + ' half'})`;
+            
+            // Remove from config
+            if (workspaceConfig[monitor] && workspaceConfig[monitor][position]) {
+                delete workspaceConfig[monitor][position];
+                if (Object.keys(workspaceConfig[monitor]).length === 0) {
+                    delete workspaceConfig[monitor];
+                }
+            }
+            
+            generateCode();
+        }
+
+        function addCustomApp() {
+            const input = document.getElementById('customAppName');
+            const appName = input.value.trim();
+            
+            if (appName) {
+                const appsSection = input.closest('.apps-section');
+                const newApp = document.createElement('div');
+                newApp.className = 'app-item';
+                newApp.draggable = true;
+                newApp.dataset.app = appName;
+                newApp.textContent = appName;
+                
+                newApp.addEventListener('dragstart', handleDragStart);
+                newApp.addEventListener('dragend', handleDragEnd);
+                
+                appsSection.insertBefore(newApp, appsSection.querySelector('.custom-app'));
+                input.value = '';
+            }
+        }
+
+        function clearAll() {
+            document.querySelectorAll('.app-slot.occupied').forEach(slot => {
+                slot.classList.remove('occupied');
+                const position = slot.dataset.position;
+                slot.innerHTML = `Drop app here (${position === 'fullscreen' ? 'fullscreen' : position + ' half'})`;
+            });
+            workspaceConfig = {};
+            generateCode();
+        }
+
+        function loadExample() {
+            clearAll();
+            
+            // Load the original example configuration
+            const examples = {
+                '1': { 'top': 'Microsoft Outlook', 'bottom': 'Microsoft Teams' },
+                '2': { 'top': 'Terminal', 'bottom': 'Terminal' },
+                '3': { 'fullscreen': 'Google Chrome' },
+                '4': { 'fullscreen': 'Notion' }
+            };
+            
+            Object.keys(examples).forEach(monitor => {
+                Object.keys(examples[monitor]).forEach(position => {
+                    const slot = document.querySelector(`[data-monitor="${monitor}"] [data-position="${position}"]`);
+                    if (slot) {
+                        const appName = examples[monitor][position];
+                        slot.textContent = appName;
+                        slot.classList.add('occupied');
+                        slot.innerHTML = `${appName}<button class="remove-btn" onclick="removeApp(this)">×</button>`;
+                    }
+                });
+            });
+            
+            workspaceConfig = examples;
+            generateCode();
+        }
+
+        function generateCode() {
+            if (Object.keys(workspaceConfig).length === 0) {
+                document.getElementById('codeOutput').textContent = '-- Drag applications to monitors above to generate your custom Hammerspoon configuration';
+                return;
+            }
+
+            let luaCode = `-- Custom Hammerspoon Workspace Configuration
+-- Generated by Workspace Designer
+-- Trigger with: cmd+alt+ctrl+W
+
+hs.hotkey.bind({"cmd","alt","ctrl"}, "W", function()
+  --------------------------------------------------------------------
+  -- STEP 1: Relaunch menu-bar apps (never closed)
+  --------------------------------------------------------------------
+  hs.application.launchOrFocus("Raycast")
+  hs.application.launchOrFocus("Wispr Flow")
+  hs.application.launchOrFocus("Hand Mirror")
+
+  -- Close everything else (except essentials)
+  local toKeep = {
+    ["Hammerspoon"]=true,
+    ["Finder"]=true,
+    ["Raycast"]=true,
+    ["Wispr Flow"]=true,
+    ["Hand Mirror"]=true
+  }
+  for _, app in ipairs(hs.application.runningApplications()) do
+    local name = app:name()
+    if name and not toKeep[name] then app:kill() end
+  end
+
+  --------------------------------------------------------------------
+  -- STEP 2: Launch applications
+  --------------------------------------------------------------------
+  hs.timer.doAfter(3, function()
+    local screens = {
+      one   = hs.screen.find(5), -- Monitor 1
+      two   = hs.screen.find(2), -- Monitor 2  
+      three = hs.screen.find(3), -- Monitor 3
+      four  = hs.screen.find(1)  -- Monitor 4
+    }
+
+`;
+
+            // Generate app launches
+            const allApps = new Set();
+            Object.values(workspaceConfig).forEach(monitor => {
+                Object.values(monitor).forEach(app => allApps.add(app));
+            });
+
+            allApps.forEach(app => {
+                luaCode += `    hs.application.launchOrFocus("${app}")\n`;
+            });
+
+            luaCode += `
+    --------------------------------------------------------------------
+    -- STEP 3: Window arrangement
+    --------------------------------------------------------------------
+    hs.timer.doAfter(8, function()
+      local wins = hs.window.filter.default:getWindows()
+      local appWindows = {}
+
+      -- Find all windows
+      for _,w in ipairs(wins) do
+        local appName = w:application():name()
+        if not appWindows[appName] then appWindows[appName] = {} end
+        table.insert(appWindows[appName], w)
+      end
+
+      -- Helper functions
+      local function halfRows(screen, topApp, bottomApp)
+        if screen then
+          local f = screen:frame()
+          if topApp and appWindows[topApp] and appWindows[topApp][1] then
+            local win = appWindows[topApp][1]
+            win:moveToScreen(screen):setFrame({x=f.x,y=f.y,w=f.w,h=f.h/2})
+          end
+          if bottomApp and appWindows[bottomApp] then
+            local win = appWindows[bottomApp][bottomApp == topApp and 2 or 1]
+            if win then
+              win:moveToScreen(screen):setFrame({x=f.x,y=f.y+f.h/2,w=f.w,h=f.h/2})
+            end
+          end
+        end
+      end
+
+      local function fullscreen(screen, app)
+        if screen and app and appWindows[app] and appWindows[app][1] then
+          local win = appWindows[app][1]
+          win:moveToScreen(screen):setFrame(screen:frame())
+        end
+      end
+
+      -- Apply layout
+`;
+
+            // Generate layout code for each monitor
+            ['1', '2', '3', '4'].forEach(monitor => {
+                if (workspaceConfig[monitor]) {
+                    const monitorApps = workspaceConfig[monitor];
+                    const screenVar = ['one', 'two', 'three', 'four'][parseInt(monitor) - 1];
+                    
+                    if (monitorApps.fullscreen) {
+                        luaCode += `      fullscreen(screens.${screenVar}, "${monitorApps.fullscreen}") -- Monitor ${monitor}\n`;
+                    } else if (monitorApps.top || monitorApps.bottom) {
+                        const topApp = monitorApps.top || 'nil';
+                        const bottomApp = monitorApps.bottom || 'nil';
+                        luaCode += `      halfRows(screens.${screenVar}, "${topApp}", "${bottomApp}") -- Monitor ${monitor}\n`;
+                    }
+                }
+            });
+
+            luaCode += `    end)
+  end)
+end)`;
+
+            document.getElementById('codeOutput').textContent = luaCode;
+        }
+
+        function exportConfig() {
+            const config = {
+                timestamp: new Date().toISOString(),
+                monitors: workspaceConfig,
+                code: document.getElementById('codeOutput').textContent
+            };
+            
+            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'hammerspoon-workspace-config.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Allow Enter key to add custom app
+        document.getElementById('customAppName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addCustomApp();
+            }
+        });
+    </script>
+</body>
+</html>
