@@ -293,6 +293,73 @@
             background: #cbd5e0;
         }
 
+        /* Keystroke Display */
+        .keystroke-display {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .hotkey {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            background: #f7fafc;
+            padding: 15px 25px;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+            display: inline-block;
+        }
+
+        .hotkey-desc {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        /* Installation Instructions */
+        .installation-section {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .installation-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #4a5568;
+        }
+
+        .step {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .step-number {
+            font-weight: bold;
+            color: #667eea;
+            margin-right: 8px;
+        }
+
+        .file-path {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+
         /* Drag and Drop Effects */
         .dragging {
             opacity: 0.5;
@@ -318,6 +385,57 @@
         <div class="header">
             <h1>🖥️ Hammerspoon Workspace Designer</h1>
             <p>Drag applications onto monitors • Configure splits • Generate Lua script</p>
+        </div>
+
+        <!-- Keystroke Display -->
+        <div class="keystroke-display">
+            <div class="hotkey" id="hotkeyDisplay">⌘ + ⌥ + ⌃ + W</div>
+            <div class="hotkey-desc">Hotkey to trigger your custom workspace layout</div>
+            <div style="margin-top: 15px;">
+                <label style="margin-right: 10px;">Customize hotkey:</label>
+                <select id="hotkeySelector" style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
+                    <option value="cmd,alt,ctrl,W">⌘⌥⌃W (Default)</option>
+                    <option value="cmd,alt,W">⌘⌥W (Simpler)</option>
+                    <option value="cmd,ctrl,W">⌘⌃W (Alternative)</option>
+                    <option value="cmd,alt,ctrl,Space">⌘⌥⌃Space (Spacebar)</option>
+                    <option value="cmd,alt,ctrl,R">⌘⌥⌃R (Reset)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Installation Instructions -->
+        <div class="installation-section">
+            <div class="installation-title">📥 How to Install in Hammerspoon</div>
+            
+            <div class="step">
+                <span class="step-number">1.</span>
+                <strong>Install Hammerspoon:</strong> Download from <a href="https://www.hammerspoon.org/" target="_blank">hammerspoon.org</a> if you haven't already
+            </div>
+            
+            <div class="step">
+                <span class="step-number">2.</span>
+                <strong>Open Hammerspoon config:</strong> Click Hammerspoon menu bar icon → "Open Config" or manually edit <span class="file-path">~/.hammerspoon/init.lua</span>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">3.</span>
+                <strong>Copy generated script:</strong> Use the "Copy Script" button below after configuring your workspace
+            </div>
+            
+            <div class="step">
+                <span class="step-number">4.</span>
+                <strong>Paste into config:</strong> Add the generated code to your <span class="file-path">init.lua</span> file (replace any existing workspace code)
+            </div>
+            
+            <div class="step">
+                <span class="step-number">5.</span>
+                <strong>Reload Hammerspoon:</strong> Click Hammerspoon menu bar icon → "Reload Config" or press <span class="file-path">⌘⌥⌃R</span>
+            </div>
+            
+            <div class="step">
+                <span class="step-number">6.</span>
+                <strong>Test your workspace:</strong> Press <span class="file-path">⌘⌥⌃W</span> to activate your custom workspace layout!
+            </div>
         </div>
 
         <div class="main-content">
@@ -479,13 +597,41 @@
             'Microsoft Excel', 'Microsoft Word', 'Microsoft PowerPoint', 'Hammerspoon'
         ];
 
+        // Current hotkey configuration
+        let currentHotkey = { keys: ['cmd', 'alt', 'ctrl'], trigger: 'W', display: '⌘ + ⌥ + ⌃ + W' };
+
         // Initialize drag and drop
         document.addEventListener('DOMContentLoaded', function() {
             initializeDragAndDrop();
             initializeSplitSelectors();
             populateDropdowns();
+            initializeHotkeySelector();
             generateScript();
         });
+
+        function initializeHotkeySelector() {
+            const selector = document.getElementById('hotkeySelector');
+            selector.addEventListener('change', function() {
+                const value = this.value;
+                const parts = value.split(',');
+                const trigger = parts.pop();
+                const keys = parts;
+                
+                // Update hotkey configuration
+                currentHotkey.keys = keys;
+                currentHotkey.trigger = trigger;
+                
+                // Update display
+                const displayMap = {
+                    'cmd': '⌘', 'alt': '⌥', 'ctrl': '⌃', 'shift': '⇧'
+                };
+                const displayKeys = keys.map(k => displayMap[k] || k).join(' + ');
+                currentHotkey.display = `${displayKeys} + ${trigger}`;
+                
+                document.getElementById('hotkeyDisplay').textContent = currentHotkey.display;
+                generateScript();
+            });
+        }
 
         function populateDropdowns() {
             document.querySelectorAll('.zone-selector').forEach(select => {
@@ -715,11 +861,21 @@
         }
 
         function generateScript() {
+            // Create Lua array format for hotkey
+            const luaKeys = currentHotkey.keys.map(k => `"${k}"`).join(',');
+            
             let script = `-- Hammerspoon Workspace Configuration
 -- Generated by Workspace Designer
--- Trigger with: cmd+alt+ctrl+W
+-- ${currentHotkey.display} to trigger your custom workspace layout
+--
+-- Installation Instructions:
+-- 1. Copy this entire script
+-- 2. Open ~/.hammerspoon/init.lua (Hammerspoon menu → "Open Config")
+-- 3. Paste this code (replace any existing workspace code)
+-- 4. Reload Hammerspoon (menu → "Reload Config" or ⌘⌥⌃R)
+-- 5. Press ${currentHotkey.display} to activate your workspace!
 
-hs.hotkey.bind({"cmd","alt","ctrl"}, "W", function()
+hs.hotkey.bind({${luaKeys}}, "${currentHotkey.trigger}", function()
   -- Close all apps except essentials
   local toKeep = {
     ["Hammerspoon"]=true,
