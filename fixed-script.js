@@ -6,20 +6,21 @@ const apps = [
     'Google Chrome', 'Microsoft Edge', 'Safari', 'Perplexity Comet'
 ];
 
-// Current hotkey configuration
-let currentHotkey = { keys: ['cmd', 'alt', 'ctrl'], trigger: 'W', display: '⌘ + ⌥ + ⌃ + W' };
+// Current hotkey configuration - Updated with working setup
+let currentHotkey = { keys: ['cmd', 'alt', 'ctrl'], trigger: 'W', display: '⌘ + ⌥ + ⌃ + W (Full Reset)' };
+let gentleHotkey = { keys: ['cmd', 'alt', 'ctrl'], trigger: 'G', display: '⌘ + ⌥ + ⌃ + G (Gentle Mode)' };
 
 // Preset management
 let workspacePresets = {};
 let currentPresetId = 'default';
 let currentPresetName = 'Default Workspace';
 
-// Workspace configuration
+// Workspace configuration - Updated to match working Hammerspoon setup
 let workspaceConfig = {
-    monitor1: { split: 'split-2', apps: { top: null, bottom: null } },
-    monitor2: { split: 'split-2', apps: { top: null, bottom: null } },
-    monitor3: { split: 'single', apps: { full: null } },
-    monitor4: { split: 'single', apps: { full: null } }
+    monitor1: { split: 'split-2', apps: { top: 'Microsoft Outlook', bottom: 'Microsoft Teams' }, position: 'Samsung1 (leftmost)', screen: 4 },
+    monitor2: { split: 'single', apps: { full: 'Terminal' }, position: 'Samsung2', screen: 3 },
+    monitor3: { split: 'single', apps: { full: 'Google Chrome' }, position: 'UltraWide', screen: 1, tabs: 3 },
+    monitor4: { split: 'single', apps: { full: 'Notion' }, position: 'MacBook (rightmost)', screen: 2 }
 };
 
 // Initialize when page loads
