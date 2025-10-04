@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeff's Workspace Configuration</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        
+        .status {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .monitors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .monitor {
+            border: 2px solid #4299e1;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f7fafc;
+        }
+        
+        .monitor h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .app {
+            background: #4299e1;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 5px 0;
+            font-weight: 500;
+        }
+        
+        .hotkeys {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .hotkey-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .hotkey {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .hotkey-combo {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            background: #2d3748;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .chrome-tabs {
+            background: #fff5f5;
+            border: 1px solid #fc8181;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .chrome-tabs h4 {
+            color: #c53030;
+            margin-bottom: 10px;
+        }
+        
+        .tab {
+            background: #fed7d7;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖥️ Jeff's Workspace Configuration</h1>
+        
+        <div class="status">
+            <h2>✅ Configuration Status: ACTIVE</h2>
+            <p>Hammerspoon is running with your workspace automation</p>
+        </div>
+        
+        <div class="monitors">
+            <div class="monitor">
+                <h3>Position 1: Samsung1 (Leftmost)</h3>
+                <p><strong>Screen ID:</strong> 4</p>
+                <div class="app">📧 Microsoft Outlook (Top Half)</div>
+                <div class="app">💬 Microsoft Teams (Bottom Half)</div>
+            </div>
+            
+            <div class="monitor">
+                <h3>Position 2: Samsung2</h3>
+                <p><strong>Screen ID:</strong> 3</p>
+                <div class="app">💻 Terminal (Fullscreen Stacked)</div>
+                <div class="app">💻 iTerm2 (Fullscreen Stacked)</div>
+            </div>
+            
+            <div class="monitor">
+                <h3>Position 3: UltraWide</h3>
+                <p><strong>Screen ID:</strong> 1</p>
+                <div class="app">🌐 Google Chrome (Fullscreen)</div>
+                <div class="chrome-tabs">
+                    <h4>Auto-opened tabs:</h4>
+                    <div class="tab">Portfolio Showcase</div>
+                    <div class="tab">ArcGIS Content Manager</div>
+                    <div class="tab">ArcGIS Experience Builder</div>
+                </div>
+            </div>
+            
+            <div class="monitor">
+                <h3>Position 4: MacBook (Rightmost)</h3>
+                <p><strong>Screen ID:</strong> 2</p>
+                <div class="app">📝 Notion (Fullscreen)</div>
+            </div>
+        </div>
+        
+        <div class="hotkeys">
+            <h2>⌨️ Available Hotkeys</h2>
+            <div class="hotkey-grid">
+                <div class="hotkey">
+                    <span>Full Reset Mode</span>
+                    <span class="hotkey-combo">⌘⌥⌃W</span>
+                </div>
+                <div class="hotkey">
+                    <span>Gentle Mode</span>
+                    <span class="hotkey-combo">⌘⌥⌃G</span>
+                </div>
+                <div class="hotkey">
+                    <span>Move to Position 1</span>
+                    <span class="hotkey-combo">⌘⌥⌃1</span>
+                </div>
+                <div class="hotkey">
+                    <span>Move to Position 2</span>
+                    <span class="hotkey-combo">⌘⌥⌃2</span>
+                </div>
+                <div class="hotkey">
+                    <span>Move to Position 3</span>
+                    <span class="hotkey-combo">⌘⌥⌃3</span>
+                </div>
+                <div class="hotkey">
+                    <span>Move to Position 4</span>
+                    <span class="hotkey-combo">⌘⌥⌃4</span>
+                </div>
+                <div class="hotkey">
+                    <span>UltraWide Left Half</span>
+                    <span class="hotkey-combo">⌘⌥⌃U</span>
+                </div>
+                <div class="hotkey">
+                    <span>UltraWide Right Half</span>
+                    <span class="hotkey-combo">⌘⌥⌃R</span>
+                </div>
+                <div class="hotkey">
+                    <span>Show All Hotkeys</span>
+                    <span class="hotkey-combo">⌘⌥⌃H</span>
+                </div>
+                <div class="hotkey">
+                    <span>Show Layout</span>
+                    <span class="hotkey-combo">⌘⌥⌃L</span>
+                </div>
+                <div class="hotkey">
+                    <span>Test Hammerspoon</span>
+                    <span class="hotkey-combo">⌘⌥⌃T</span>
+                </div>
+                <div class="hotkey">
+                    <span>Chrome Bookmark</span>
+                    <span class="hotkey-combo">⌘⌥⌃C</span>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #718096;">
+            <p>Configuration file: <code>~/.hammerspoon/init.lua</code></p>
+            <p>Auto-loads on startup ✅</p>
+        </div>
+    </div>
+</body>
+</html>
