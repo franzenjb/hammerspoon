@@ -18,14 +18,14 @@
             line-height: 1.6;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            /* Allow app to be taller than viewport */
         }
 
         .container {
             max-width: 1600px;
             margin: 0 auto;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
@@ -75,10 +75,10 @@
         .monitors-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr 120px;
+            grid-template-rows: 1fr 1fr 140px;
             gap: 15px;
             height: 100%;
-            min-height: 500px;
+            min-height: 600px;
             padding: 10px;
             box-sizing: border-box;
         }
@@ -119,8 +119,8 @@
         .monitor4 { 
             grid-column: 1 / 3; 
             grid-row: 3;
-            min-height: 100px;
-            max-height: 120px;
+            min-height: 140px;
+            /* Same full width as Monitor 3 */
         }
 
         .monitor-header {
@@ -805,17 +805,6 @@
             monitor3: { split: 'single', apps: { full: null } },
             monitor4: { split: 'single', apps: { full: null } }
         };
-
-        // Available applications - Jeff's actual workflow apps
-        const apps = [
-            'Microsoft Outlook', 'Microsoft Teams', 'Notion', 'Red Sands', 'ChatGPT',
-            'Claude', 'Perplexity- Ask Anything', 'Cursor', 'GitHub Desktop', 'Messages',
-            'Microsoft Excel', 'Microsoft Word', 'Microsoft PowerPoint', 'Hammerspoon',
-            'Google Chrome', 'Microsoft Edge', 'Safari', 'Perplexity Comet'
-        ];
-
-        // Current hotkey configuration
-        let currentHotkey = { keys: ['cmd', 'alt', 'ctrl'], trigger: 'W', display: '⌘ + ⌥ + ⌃ + W' };
         
         // Preset management
         let workspacePresets = {};
@@ -823,13 +812,18 @@
         let currentPresetName = 'Default Workspace';
 
         // Initialize drag and drop
+        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            initializeDragAndDrop();
-            initializeSplitSelectors();
-            populateDropdowns();
-            loadPresets();
-            updatePresetDisplay();
-            generateScript();
+            console.log('DOM Content Loaded - starting initialization...');
+            try {
+                populateDropdowns();
+                initializeDragAndDrop();
+                updatePresetDisplay();
+                generateScript();
+                console.log('Initialization complete!');
+            } catch (error) {
+                console.error('Initialization failed:', error);
+            }
         });
 
         function savePreset() {
@@ -974,10 +968,14 @@
         }
 
         function populateDropdowns() {
+            console.log('Populating dropdowns with apps:', apps);
             document.querySelectorAll('.zone-selector').forEach(select => {
                 select.innerHTML = '<option value="">Choose an app...</option>';
                 apps.forEach(app => {
-                    select.innerHTML += `<option value="${app}">${app}</option>`;
+                    const option = document.createElement('option');
+                    option.value = app;
+                    option.textContent = app;
+                    select.appendChild(option);
                 });
                 
                 select.addEventListener('change', function() {
@@ -1466,8 +1464,14 @@ end)`;
         }
 
         function updatePresetDisplay() {
-            document.getElementById('hotkeyDisplay').textContent = currentHotkey.display;
-            document.getElementById('presetDesc').textContent = currentPresetName + ' - Configure your apps';
+            try {
+                const hotkeyElement = document.getElementById('hotkeyDisplay');
+                const descElement = document.getElementById('presetDesc');
+                if (hotkeyElement) hotkeyElement.textContent = currentHotkey.display;
+                if (descElement) descElement.textContent = currentPresetName + ' - Configure your apps';
+            } catch (error) {
+                console.error('Error updating preset display:', error);
+            }
         }
 
         function generateScript() {
