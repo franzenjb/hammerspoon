@@ -19,7 +19,6 @@
             margin: 0;
             padding: 0;
             min-height: 100vh;
-            /* Allow app to be taller than viewport */
         }
 
         .container {
@@ -120,7 +119,6 @@
             grid-column: 1 / 3; 
             grid-row: 3;
             min-height: 140px;
-            /* Same full width as Monitor 3 */
         }
 
         .monitor-header {
@@ -567,8 +565,19 @@
 
         <!-- Current Preset Display -->
         <div class="keystroke-display">
-            <div class="hotkey" id="hotkeyDisplay">⌘ + ⌥ + ⌃ + W</div>
-            <div class="hotkey-desc" id="presetDesc">Default Workspace - Drag apps to configure</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px;">
+                <div style="text-align: center;">
+                    <div class="hotkey">⌘⌥⌃G</div>
+                    <div style="font-size: 0.9rem; color: #666; margin-top: 5px;">Gentle Mode</div>
+                    <div style="font-size: 0.8rem; color: #888;">Arrange without closing apps</div>
+                </div>
+                <div style="text-align: center;">
+                    <div class="hotkey">⌘⌥⌃W</div>
+                    <div style="font-size: 0.9rem; color: #666; margin-top: 5px;">Full Reset</div>
+                    <div style="font-size: 0.8rem; color: #888;">Close & restart everything</div>
+                </div>
+            </div>
+            <div class="hotkey-desc" id="presetDesc">Configure your workspace below - generates both modes</div>
         </div>
 
         <div class="main-content">
@@ -751,12 +760,12 @@
             
             <div class="step">
                 <span class="step-number">2.</span>
-                <strong>Create workspace presets:</strong> Configure different layouts above and save them with unique names and hotkeys
+                <strong>Configure workspace:</strong> Drag apps from the library onto monitors and configure splits as needed
             </div>
             
             <div class="step">
                 <span class="step-number">3.</span>
-                <strong>Copy generated script:</strong> Use the "Copy Script" button - it includes ALL your saved presets
+                <strong>Copy generated script:</strong> Use the "Copy Script" button - it includes both Gentle (⌘⌥⌃G) and Full Reset (⌘⌥⌃W) modes
             </div>
             
             <div class="step">
@@ -766,17 +775,17 @@
             
             <div class="step">
                 <span class="step-number">5.</span>
-                <strong>Paste into config:</strong> Add the generated code to your <span class="file-path">init.lua</span> file (replace any existing workspace code)
+                <strong>Paste into config:</strong> Add the generated code to your <span class="file-path">init.lua</span> file
             </div>
             
             <div class="step">
                 <span class="step-number">6.</span>
-                <strong>Reload Hammerspoon:</strong> Click Hammerspoon menu bar icon → "Reload Config" or press <span class="file-path">⌘⌥⌃R</span>
+                <strong>Reload Hammerspoon:</strong> Click Hammerspoon menu bar icon → "Reload Config"
             </div>
             
             <div class="step">
                 <span class="step-number">7.</span>
-                <strong>Test your workspaces:</strong> Use each preset's unique hotkey to switch between different workspace layouts!
+                <strong>Use your workspace:</strong> Press <span class="file-path">⌘⌥⌃G</span> for gentle arrangement or <span class="file-path">⌘⌥⌃W</span> for full reset!
             </div>
         </div>
     </div>
@@ -790,14 +799,6 @@
             'Google Chrome', 'Microsoft Edge', 'Safari', 'Perplexity Comet'
         ];
 
-        // Current hotkey configuration
-        let currentHotkey = { keys: ['cmd', 'alt', 'ctrl'], trigger: 'W', display: '⌘ + ⌥ + ⌃ + W' };
-
-        // Preset management
-        let workspacePresets = {};
-        let currentPresetId = 'default';
-        let currentPresetName = 'Default Workspace';
-
         // Workspace configuration
         let workspaceConfig = {
             monitor1: { split: 'split-2', apps: { top: null, bottom: null } },
@@ -805,167 +806,15 @@
             monitor3: { split: 'single', apps: { full: null } },
             monitor4: { split: 'single', apps: { full: null } }
         };
-        
-        // Preset management
-        let workspacePresets = {};
-        let currentPresetId = 'default';
-        let currentPresetName = 'Default Workspace';
 
-        // Initialize drag and drop
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM Content Loaded - starting initialization...');
-            try {
-                populateDropdowns();
-                initializeDragAndDrop();
-                updatePresetDisplay();
-                generateScript();
-                console.log('Initialization complete!');
-            } catch (error) {
-                console.error('Initialization failed:', error);
-            }
+            console.log('Initializing workspace designer...');
+            initializeDragAndDrop();
+            initializeSplitSelectors();
+            populateDropdowns();
+            generateScript();
         });
-
-        function savePreset() {
-            const nameInput = document.getElementById('presetName');
-            const hotkeySelect = document.getElementById('presetHotkey');
-            
-            const name = nameInput.value.trim();
-            if (!name) {
-                alert('Please enter a preset name');
-                return;
-            }
-            
-            const hotkeyValue = hotkeySelect.value;
-            const parts = hotkeyValue.split(',');
-            const trigger = parts.pop();
-            const keys = parts;
-            
-            const displayMap = {
-                'cmd': '⌘', 'alt': '⌥', 'ctrl': '⌃', 'shift': '⇧'
-            };
-            const displayKeys = keys.map(k => displayMap[k] || k).join(' + ');
-            const hotkeyDisplay = `${displayKeys} + ${trigger}`;
-            
-            const presetId = Date.now().toString();
-            workspacePresets[presetId] = {
-                id: presetId,
-                name: name,
-                hotkey: { keys, trigger, display: hotkeyDisplay },
-                config: JSON.parse(JSON.stringify(workspaceConfig))
-            };
-            
-            // Save to localStorage
-            localStorage.setItem('hammerspoonPresets', JSON.stringify(workspacePresets));
-            
-            // Clear inputs
-            nameInput.value = '';
-            
-            // Update display
-            renderPresetList();
-            generateScript();
-        }
-        
-        function loadPresets() {
-            const saved = localStorage.getItem('hammerspoonPresets');
-            if (saved) {
-                workspacePresets = JSON.parse(saved);
-            }
-            renderPresetList();
-        }
-        
-        function renderPresetList() {
-            const list = document.getElementById('presetList');
-            list.innerHTML = '';
-            
-            Object.values(workspacePresets).forEach(preset => {
-                const item = document.createElement('div');
-                item.className = `preset-item ${preset.id === currentPresetId ? 'active' : ''}`;
-                item.innerHTML = `
-                    <div class="preset-info">
-                        <div class="preset-name">${preset.name}</div>
-                        <div class="preset-hotkey">${preset.hotkey.display}</div>
-                    </div>
-                    <div class="preset-actions">
-                        <button class="preset-btn load" onclick="loadPreset('${preset.id}')">Load</button>
-                        <button class="preset-btn delete" onclick="deletePreset('${preset.id}')">Delete</button>
-                    </div>
-                `;
-                list.appendChild(item);
-            });
-        }
-        
-        function loadPreset(presetId) {
-            if (!workspacePresets[presetId]) return;
-            
-            const preset = workspacePresets[presetId];
-            currentPresetId = presetId;
-            currentPresetName = preset.name;
-            currentHotkey = preset.hotkey;
-            workspaceConfig = JSON.parse(JSON.stringify(preset.config));
-            
-            // Update UI
-            updatePresetDisplay();
-            updateMonitorDisplays();
-            renderPresetList();
-            generateScript();
-        }
-        
-        function deletePreset(presetId) {
-            if (confirm('Delete this preset?')) {
-                delete workspacePresets[presetId];
-                localStorage.setItem('hammerspoonPresets', JSON.stringify(workspacePresets));
-                
-                if (currentPresetId === presetId) {
-                    currentPresetId = 'default';
-                    currentPresetName = 'Default Workspace';
-                    resetToDefault();
-                }
-                
-                renderPresetList();
-                generateScript();
-            }
-        }
-        
-        function updatePresetDisplay() {
-            document.getElementById('hotkeyDisplay').textContent = currentHotkey.display;
-            document.getElementById('presetDesc').textContent = `${currentPresetName} - Configure your apps`;
-        }
-        
-        function resetToDefault() {
-            workspaceConfig = {
-                monitor1: { split: 'split-2', apps: { top: null, bottom: null } },
-                monitor2: { split: 'split-2', apps: { top: null, bottom: null } },
-                monitor3: { split: 'single', apps: { full: null } },
-                monitor4: { split: 'single', apps: { full: null } }
-            };
-            currentHotkey = { keys: ['cmd', 'alt', 'ctrl'], trigger: 'W', display: '⌘ + ⌥ + ⌃ + W' };
-            updateMonitorDisplays();
-            updatePresetDisplay();
-        }
-        
-        function updateMonitorDisplays() {
-            // Reset all monitor displays to match workspaceConfig
-            ['1', '2', '3', '4'].forEach(monitor => {
-                const monitorKey = `monitor${monitor}`;
-                const config = workspaceConfig[monitorKey];
-                
-                // Update split selector
-                const splitSelector = document.querySelector(`[data-monitor="${monitor}"] .split-selector`);
-                if (splitSelector) {
-                    splitSelector.value = config.split;
-                    updateMonitorSplit(monitor, config.split);
-                }
-                
-                // Update apps in zones
-                Object.entries(config.apps).forEach(([zone, app]) => {
-                    if (app) {
-                        updateZoneDisplay(monitor, zone, app);
-                        updateDropdown(monitor, zone, app);
-                    }
-                });
-            });
-        }
 
         function populateDropdowns() {
             console.log('Populating dropdowns with apps:', apps);
@@ -989,8 +838,10 @@
         }
 
         function initializeDragAndDrop() {
+            console.log('Initializing drag and drop...');
             // Make app items draggable
             const appItems = document.querySelectorAll('.app-item');
+            console.log('Found app items:', appItems.length);
             appItems.forEach(item => {
                 item.addEventListener('dragstart', handleDragStart);
                 item.addEventListener('dragend', handleDragEnd);
@@ -998,6 +849,7 @@
 
             // Make drop zones droppable
             const dropZones = document.querySelectorAll('.drop-zone');
+            console.log('Found drop zones:', dropZones.length);
             dropZones.forEach(zone => {
                 zone.addEventListener('dragover', handleDragOver);
                 zone.addEventListener('drop', handleDrop);
@@ -1006,6 +858,7 @@
         }
 
         function handleDragStart(e) {
+            console.log('Drag start:', e.target.dataset.app);
             e.dataTransfer.setData('text/plain', e.target.dataset.app);
             e.target.classList.add('dragging');
         }
@@ -1029,12 +882,14 @@
             const monitor = e.currentTarget.dataset.monitor;
             const zone = e.currentTarget.dataset.zone;
             
+            console.log('Drop:', app, 'onto monitor', monitor, 'zone', zone);
             assignAppToZone(monitor, zone, app);
             e.currentTarget.classList.remove('drag-over');
         }
 
         function assignAppToZone(monitor, zone, app) {
-            const monitorKey = `monitor${monitor}`;
+            console.log('Assigning app:', app, 'to monitor:', monitor, 'zone:', zone);
+            const monitorKey = 'monitor' + monitor;
             workspaceConfig[monitorKey].apps[zone] = app;
             
             updateZoneDisplay(monitor, zone, app);
@@ -1043,26 +898,25 @@
         }
 
         function updateZoneDisplay(monitor, zone, app) {
-            const zoneElement = document.querySelector(`[data-monitor="${monitor}"][data-zone="${zone}"]`);
-            zoneElement.classList.add('has-app');
-            zoneElement.innerHTML = `
-                <div class="app-in-zone">${app}</div>
-                <button class="remove-app" onclick="removeApp('${monitor}', '${zone}')">&times;</button>
-            `;
+            const zoneElement = document.querySelector('[data-monitor="' + monitor + '"][data-zone="' + zone + '"]');
+            if (zoneElement) {
+                zoneElement.classList.add('has-app');
+                zoneElement.innerHTML = '<div class="app-in-zone">' + app + '</div><button class="remove-app" onclick="removeApp(\'' + monitor + '\', \'' + zone + '\')">&times;</button>';
+            }
         }
 
         function updateDropdown(monitor, zone, app) {
-            const dropdown = document.querySelector(`select[data-monitor="${monitor}"][data-zone="${zone}"]`);
+            const dropdown = document.querySelector('select[data-monitor="' + monitor + '"][data-zone="' + zone + '"]');
             if (dropdown) {
                 dropdown.value = app;
             }
         }
 
         function removeApp(monitor, zone) {
-            const monitorKey = `monitor${monitor}`;
+            const monitorKey = 'monitor' + monitor;
             workspaceConfig[monitorKey].apps[zone] = null;
             
-            const zoneElement = document.querySelector(`[data-monitor="${monitor}"][data-zone="${zone}"]`);
+            const zoneElement = document.querySelector('[data-monitor="' + monitor + '"][data-zone="' + zone + '"]');
             zoneElement.classList.remove('has-app');
             
             const zoneNames = {
@@ -1070,18 +924,15 @@
                 left: 'Left Half', right: 'Right Half', left3: '1/3', center3: '1/3', right3: '1/3'
             };
             
-            zoneElement.innerHTML = `
-                <div>Drop app here or click to select</div>
-                <div style="font-size: 0.8rem; color: #999;">${zoneNames[zone] || zone}</div>
-                <select class="zone-selector" data-monitor="${monitor}" data-zone="${zone}">
-                    <option value="">Choose an app...</option>
-                </select>
-            `;
+            zoneElement.innerHTML = '<div>Drop app here or click to select</div><div style="font-size: 0.8rem; color: #999;">' + (zoneNames[zone] || zone) + '</div><select class="zone-selector" data-monitor="' + monitor + '" data-zone="' + zone + '"><option value="">Choose an app...</option></select>';
             
             // Repopulate dropdown
             const newSelect = zoneElement.querySelector('.zone-selector');
             apps.forEach(app => {
-                newSelect.innerHTML += `<option value="${app}">${app}</option>`;
+                const option = document.createElement('option');
+                option.value = app;
+                option.textContent = app;
+                newSelect.appendChild(option);
             });
             
             newSelect.addEventListener('change', function() {
@@ -1105,90 +956,30 @@
         }
 
         function updateMonitorSplit(monitor, split) {
-            const monitorKey = `monitor${monitor}`;
+            const monitorKey = 'monitor' + monitor;
             workspaceConfig[monitorKey].split = split;
             
-            const zonesContainer = document.querySelector(`.monitor${monitor} .monitor-zones`);
-            zonesContainer.className = `monitor-zones ${split}`;
+            const zonesContainer = document.querySelector('.monitor' + monitor + ' .monitor-zones');
+            zonesContainer.className = 'monitor-zones ' + split;
             
             // Clear current zones and create new ones
             zonesContainer.innerHTML = '';
             
             if (split === 'single') {
-                zonesContainer.innerHTML = `
-                    <div class="drop-zone" data-monitor="${monitor}" data-zone="full">
-                        <div>Drop app here or click to select</div>
-                        <div style="font-size: 0.8rem; color: #999;">Fullscreen</div>
-                        <select class="zone-selector" data-monitor="${monitor}" data-zone="full">
-                            <option value="">Choose an app...</option>
-                        </select>
-                    </div>
-                `;
+                zonesContainer.innerHTML = '<div class="drop-zone" data-monitor="' + monitor + '" data-zone="full"><div>Drop app here or click to select</div><div style="font-size: 0.8rem; color: #999;">Fullscreen</div><select class="zone-selector" data-monitor="' + monitor + '" data-zone="full"><option value="">Choose an app...</option></select></div>';
                 workspaceConfig[monitorKey].apps = { full: null };
             } else if (split === 'split-2') {
                 if (monitor === '4') {
                     // MacBook - left/right split
-                    zonesContainer.innerHTML = `
-                        <div class="drop-zone" data-monitor="${monitor}" data-zone="left">
-                            <div>Drop app here or click to select</div>
-                            <div style="font-size: 0.8rem; color: #999;">Left Half</div>
-                            <select class="zone-selector" data-monitor="${monitor}" data-zone="left">
-                                <option value="">Choose an app...</option>
-                            </select>
-                        </div>
-                        <div class="drop-zone" data-monitor="${monitor}" data-zone="right">
-                            <div>Drop app here or click to select</div>
-                            <div style="font-size: 0.8rem; color: #999;">Right Half</div>
-                            <select class="zone-selector" data-monitor="${monitor}" data-zone="right">
-                                <option value="">Choose an app...</option>
-                            </select>
-                        </div>
-                    `;
+                    zonesContainer.innerHTML = '<div class="drop-zone" data-monitor="' + monitor + '" data-zone="left"><div>Drop app here or click to select</div><div style="font-size: 0.8rem; color: #999;">Left Half</div><select class="zone-selector" data-monitor="' + monitor + '" data-zone="left"><option value="">Choose an app...</option></select></div><div class="drop-zone" data-monitor="' + monitor + '" data-zone="right"><div>Drop app here or click to select</div><div style="font-size: 0.8rem; color: #999;">Right Half</div><select class="zone-selector" data-monitor="' + monitor + '" data-zone="right"><option value="">Choose an app...</option></select></div>';
                     workspaceConfig[monitorKey].apps = { left: null, right: null };
                 } else {
-                    // Vertical monitors or ultrawide - top/bottom or left/right
-                    zonesContainer.innerHTML = `
-                        <div class="drop-zone" data-monitor="${monitor}" data-zone="top">
-                            <div>Drop app here or click to select</div>
-                            <div style="font-size: 0.8rem; color: #999;">Top Half</div>
-                            <select class="zone-selector" data-monitor="${monitor}" data-zone="top">
-                                <option value="">Choose an app...</option>
-                            </select>
-                        </div>
-                        <div class="drop-zone" data-monitor="${monitor}" data-zone="bottom">
-                            <div>Drop app here or click to select</div>
-                            <div style="font-size: 0.8rem; color: #999;">Bottom Half</div>
-                            <select class="zone-selector" data-monitor="${monitor}" data-zone="bottom">
-                                <option value="">Choose an app...</option>
-                            </select>
-                        </div>
-                    `;
+                    // Vertical monitors or ultrawide - top/bottom split
+                    zonesContainer.innerHTML = '<div class="drop-zone" data-monitor="' + monitor + '" data-zone="top"><div>Drop app here or click to select</div><div style="font-size: 0.8rem; color: #999;">Top Half</div><select class="zone-selector" data-monitor="' + monitor + '" data-zone="top"><option value="">Choose an app...</option></select></div><div class="drop-zone" data-monitor="' + monitor + '" data-zone="bottom"><div>Drop app here or click to select</div><div style="font-size: 0.8rem; color: #999;">Bottom Half</div><select class="zone-selector" data-monitor="' + monitor + '" data-zone="bottom"><option value="">Choose an app...</option></select></div>';
                     workspaceConfig[monitorKey].apps = { top: null, bottom: null };
                 }
             } else if (split === 'split-3') {
-                zonesContainer.innerHTML = `
-                    <div class="drop-zone" data-monitor="${monitor}" data-zone="left3">
-                        <div>Drop app here or click to select</div>
-                        <div style="font-size: 0.8rem; color: #999;">1/3</div>
-                        <select class="zone-selector" data-monitor="${monitor}" data-zone="left3">
-                            <option value="">Choose an app...</option>
-                        </select>
-                    </div>
-                    <div class="drop-zone" data-monitor="${monitor}" data-zone="center3">
-                        <div>Drop app here or click to select</div>
-                        <div style="font-size: 0.8rem; color: #999;">1/3</div>
-                        <select class="zone-selector" data-monitor="${monitor}" data-zone="center3">
-                            <option value="">Choose an app...</option>
-                        </select>
-                    </div>
-                    <div class="drop-zone" data-monitor="${monitor}" data-zone="right3">
-                        <div>Drop app here or click to select</div>
-                        <div style="font-size: 0.8rem; color: #999;">1/3</div>
-                        <select class="zone-selector" data-monitor="${monitor}" data-zone="right3">
-                            <option value="">Choose an app...</option>
-                        </select>
-                    </div>
-                `;
+                zonesContainer.innerHTML = '<div class="drop-zone" data-monitor="' + monitor + '" data-zone="left3"><div>Drop app here or click to select</div><div style="font-size: 0.8rem; color: #999;">1/3</div><select class="zone-selector" data-monitor="' + monitor + '" data-zone="left3"><option value="">Choose an app...</option></select></div><div class="drop-zone" data-monitor="' + monitor + '" data-zone="center3"><div>Drop app here or click to select</div><div style="font-size: 0.8rem; color: #999;">1/3</div><select class="zone-selector" data-monitor="' + monitor + '" data-zone="center3"><option value="">Choose an app...</option></select></div><div class="drop-zone" data-monitor="' + monitor + '" data-zone="right3"><div>Drop app here or click to select</div><div style="font-size: 0.8rem; color: #999;">1/3</div><select class="zone-selector" data-monitor="' + monitor + '" data-zone="right3"><option value="">Choose an app...</option></select></div>';
                 workspaceConfig[monitorKey].apps = { left3: null, center3: null, right3: null };
             }
             
@@ -1199,250 +990,145 @@
         }
 
         function generateScript() {
-            let script = `-- Hammerspoon Workspace Configuration
--- Generated by Workspace Designer
--- Multiple workspace presets with individual hotkeys
---
--- Installation Instructions:
--- 1. Copy this entire script
--- 2. Open ~/.hammerspoon/init.lua (Hammerspoon menu → "Open Config")
--- 3. Paste this code (replace any existing workspace code)
--- 4. Reload Hammerspoon (menu → "Reload Config" or ⌘⌥⌃R)
--- 5. Use the hotkeys below to activate different workspace layouts!
-
--- WORKSPACE PRESETS:
-`;
-
-            // Add current workspace if it has apps
+            let script = '-- Hammerspoon Workspace Configuration\\n';
+            script += '-- Generated by Workspace Designer\\n';
+            script += '-- Two modes: Gentle (⌘⌥⌃G) and Full Reset (⌘⌥⌃W)\\n\\n';
+            
+            // Check if current workspace has apps
             const hasApps = Object.values(workspaceConfig).some(monitor => 
                 Object.values(monitor.apps).some(app => app !== null)
             );
             
             if (hasApps) {
-                const luaKeys = currentHotkey.keys.map(k => `"${k}"`).join(',');
-                script += `-- ${currentPresetName}: ${currentHotkey.display}\n`;
-                script += generateWorkspaceFunction(currentPresetName, currentHotkey, workspaceConfig);
+                // Generate both modes
+                script += generateGentleMode();
+                script += '\\n\\n';
+                script += generateFullResetMode();
+            } else {
+                script += '-- Configure your workspace above to generate Lua code';
             }
-            
-            // Add saved presets
-            Object.values(workspacePresets).forEach(preset => {
-                const luaKeys = preset.hotkey.keys.map(k => `"${k}"`).join(',');
-                script += `\n-- ${preset.name}: ${preset.hotkey.display}\n`;
-                script += generateWorkspaceFunction(preset.name, preset.hotkey, preset.config);
-            });
             
             document.getElementById('generatedCode').textContent = script;
         }
         
-        function generateWorkspaceFunction(name, hotkey, config) {
-            const luaKeys = hotkey.keys.map(k => `"${k}"`).join(',');
+        function generateGentleMode() {
+            let script = '-- GENTLE MODE: Arrange windows without closing apps\\n';
+            script += 'hs.hotkey.bind({"cmd","alt","ctrl"}, "G", function()\\n';
+            script += '  local screens = {\\n';
+            script += '    one = hs.screen.find(5),\\n';
+            script += '    two = hs.screen.find(2),\\n';
+            script += '    three = hs.screen.find(3),\\n';
+            script += '    four = hs.screen.find(1)\\n';
+            script += '  }\\n\\n';
             
-            let script = `hs.hotkey.bind({${luaKeys}}, "${hotkey.trigger}", function()
-  -- ${name}
-  local toKeep = {
-    ["Hammerspoon"]=true,
-    ["Finder"]=true,
-    ["Raycast"]=true,
-    ["Wispr Flow"]=true,
-    ["Hand Mirror"]=true
-  }
-  
-  for _, app in ipairs(hs.application.runningApplications()) do
-    local name = app:name()
-    if name and not toKeep[name] then app:kill() end
-  end
-
-  hs.timer.doAfter(3, function()
-    local screens = {
-      one   = hs.screen.find(5), -- Monitor 1
-      two   = hs.screen.find(2), -- Monitor 2  
-      three = hs.screen.find(3), -- Monitor 3 (Ultrawide)
-      four  = hs.screen.find(1)  -- Monitor 4 (MacBook)
-    }
-    
-    -- Launch applications
-`;
-
-            // Add app launches
-            const allApps = new Set();
-            Object.values(config).forEach(monitor => {
-                Object.values(monitor.apps).forEach(app => {
-                    if (app) allApps.add(app);
-                });
-            });
-
-            allApps.forEach(app => {
-                script += `    hs.application.launchOrFocus("${app}")\n`;
-            });
-
-            script += `
-    -- Window arrangement
-    hs.timer.doAfter(8, function()
-      local function place(win, screen, xFrac, wFrac, yFrac, hFrac)
-        if win and screen then
-          local f = screen:frame()
-          win:moveToScreen(screen)
-          win:setFrame({
-            x=f.x+f.w*xFrac,
-            y=f.y+f.h*yFrac,
-            w=f.w*wFrac,
-            h=f.h*hFrac
-          })
-        end
-      end
-      
-      local wins = hs.window.filter.default:getWindows()
-`;
-
-            // Generate window placement code for each monitor
-            ['monitor1', 'monitor2', 'monitor3', 'monitor4'].forEach((monitorKey, index) => {
-                const monitor = config[monitorKey];
-                const screenVar = ['screens.one', 'screens.two', 'screens.three', 'screens.four'][index];
-                
-                Object.entries(monitor.apps).forEach(([zone, app]) => {
-                    if (app) {
-                        script += `      
-      -- ${app} on Monitor ${index + 1} (${zone})
-      for _, win in ipairs(wins) do
-        if win:application():name() == "${app}" then
-          `;
-                        
-                        if (zone === 'full') {
-                            script += `place(win, ${screenVar}, 0, 1, 0, 1) -- Fullscreen`;
-                        } else if (zone === 'top') {
-                            script += `place(win, ${screenVar}, 0, 1, 0, 0.5) -- Top half`;
-                        } else if (zone === 'bottom') {
-                            script += `place(win, ${screenVar}, 0, 1, 0.5, 0.5) -- Bottom half`;
-                        } else if (zone === 'left') {
-                            script += `place(win, ${screenVar}, 0, 0.5, 0, 1) -- Left half`;
-                        } else if (zone === 'right') {
-                            script += `place(win, ${screenVar}, 0.5, 0.5, 0, 1) -- Right half`;
-                        } else if (zone === 'left3') {
-                            script += `place(win, ${screenVar}, 0, 0.33, 0, 1) -- Left third`;
-                        } else if (zone === 'center3') {
-                            script += `place(win, ${screenVar}, 0.33, 0.34, 0, 1) -- Center third`;
-                        } else if (zone === 'right3') {
-                            script += `place(win, ${screenVar}, 0.67, 0.33, 0, 1) -- Right third`;
-                        }
-                        
-                        script += `
-          break
-        end
-      end`;
-                    }
-                });
-            });
-
-            script += `
-    end)
-  end)
-end)
-`;
+            script += '  local function arrangeWindow(appName, screen, x, y, w, h)\\n';
+            script += '    local app = hs.application.find(appName)\\n';
+            script += '    if app then\\n';
+            script += '      local win = app:mainWindow()\\n';
+            script += '      if win and screen then\\n';
+            script += '        local f = screen:frame()\\n';
+            script += '        win:moveToScreen(screen)\\n';
+            script += '        win:setFrame({x=f.x+f.w*x, y=f.y+f.h*y, w=f.w*w, h=f.h*h})\\n';
+            script += '      end\\n';
+            script += '    end\\n';
+            script += '  end\\n\\n';
             
+            // Add arrangement calls for each configured app
+            script += generateArrangementCalls();
+            
+            script += 'end)';
             return script;
         }
-  -- Close all apps except essentials
-  local toKeep = {
-    ["Hammerspoon"]=true,
-    ["Finder"]=true,
-    ["Raycast"]=true,
-    ["Wispr Flow"]=true,
-    ["Hand Mirror"]=true
-  }
-  
-  for _, app in ipairs(hs.application.runningApplications()) do
-    local name = app:name()
-    if name and not toKeep[name] then app:kill() end
-  end
-
-  -- Wait and launch apps
-  hs.timer.doAfter(3, function()
-    local screens = {
-      one   = hs.screen.find(5), -- Monitor 1
-      two   = hs.screen.find(2), -- Monitor 2  
-      three = hs.screen.find(3), -- Monitor 3 (Ultrawide)
-      four  = hs.screen.find(1)  -- Monitor 4 (MacBook)
-    }
-    
-    -- Launch applications
-`;
-
-            // Add app launches
+        
+        function generateFullResetMode() {
+            let script = '-- FULL RESET MODE: Close and restart everything\\n';
+            script += 'hs.hotkey.bind({"cmd","alt","ctrl"}, "W", function()\\n';
+            script += '  -- Close all apps except essentials\\n';
+            script += '  local toKeep = {\\n';
+            script += '    ["Hammerspoon"]=true,\\n';
+            script += '    ["Finder"]=true,\\n';
+            script += '    ["Raycast"]=true,\\n';
+            script += '    ["Wispr Flow"]=true,\\n';
+            script += '    ["Hand Mirror"]=true\\n';
+            script += '  }\\n\\n';
+            
+            script += '  for _, app in ipairs(hs.application.runningApplications()) do\\n';
+            script += '    local name = app:name()\\n';
+            script += '    if name and not toKeep[name] then app:kill() end\\n';
+            script += '  end\\n\\n';
+            
+            script += '  hs.timer.doAfter(3, function()\\n';
+            script += '    local screens = {\\n';
+            script += '      one = hs.screen.find(5),\\n';
+            script += '      two = hs.screen.find(2),\\n';
+            script += '      three = hs.screen.find(3),\\n';
+            script += '      four = hs.screen.find(1)\\n';
+            script += '    }\\n\\n';
+            
+            // Launch apps
             const allApps = new Set();
             Object.values(workspaceConfig).forEach(monitor => {
                 Object.values(monitor.apps).forEach(app => {
                     if (app) allApps.add(app);
                 });
             });
-
+            
             allApps.forEach(app => {
-                script += `    hs.application.launchOrFocus("${app}")\n`;
+                script += '    hs.application.launchOrFocus("' + app + '")\\n';
             });
-
-            script += `
-    -- Window arrangement
-    hs.timer.doAfter(8, function()
-      local function place(win, screen, xFrac, wFrac, yFrac, hFrac)
-        if win and screen then
-          local f = screen:frame()
-          win:moveToScreen(screen)
-          win:setFrame({
-            x=f.x+f.w*xFrac,
-            y=f.y+f.h*yFrac,
-            w=f.w*wFrac,
-            h=f.h*hFrac
-          })
-        end
-      end
-      
-      local wins = hs.window.filter.default:getWindows()
-`;
-
-            // Generate window placement code for each monitor
-            ['monitor1', 'monitor2', 'monitor3', 'monitor4'].forEach((monitorKey, index) => {
-                const monitor = workspaceConfig[monitorKey];
+            
+            script += '\\n    hs.timer.doAfter(8, function()\\n';
+            script += '      local function arrangeWindow(appName, screen, x, y, w, h)\\n';
+            script += '        local app = hs.application.find(appName)\\n';
+            script += '        if app then\\n';
+            script += '          local win = app:mainWindow()\\n';
+            script += '          if win and screen then\\n';
+            script += '            local f = screen:frame()\\n';
+            script += '            win:moveToScreen(screen)\\n';
+            script += '            win:setFrame({x=f.x+f.w*x, y=f.y+f.h*y, w=f.w*w, h=f.h*h})\\n';
+            script += '          end\\n';
+            script += '        end\\n';
+            script += '      end\\n\\n';
+            script += generateArrangementCalls();
+            script += '    end)\\n';
+            script += '  end)\\n';
+            script += 'end)';
+            
+            return script;
+        }
+        
+        function generateArrangementCalls() {
+            let script = '';
+            
+            Object.entries(workspaceConfig).forEach(([monitorKey, monitor], index) => {
                 const screenVar = ['screens.one', 'screens.two', 'screens.three', 'screens.four'][index];
                 
                 Object.entries(monitor.apps).forEach(([zone, app]) => {
                     if (app) {
-                        script += `      
-      -- ${app} on Monitor ${index + 1} (${zone})
-      for _, win in ipairs(wins) do
-        if win:application():name() == "${app}" then
-          `;
+                        script += '  arrangeWindow("' + app + '", ' + screenVar + ', ';
                         
                         if (zone === 'full') {
-                            script += `place(win, ${screenVar}, 0, 1, 0, 1) -- Fullscreen`;
+                            script += '0, 0, 1, 1) -- Fullscreen\\n';
                         } else if (zone === 'top') {
-                            script += `place(win, ${screenVar}, 0, 1, 0, 0.5) -- Top half`;
+                            script += '0, 0, 1, 0.5) -- Top half\\n';
                         } else if (zone === 'bottom') {
-                            script += `place(win, ${screenVar}, 0, 1, 0.5, 0.5) -- Bottom half`;
+                            script += '0, 0.5, 1, 0.5) -- Bottom half\\n';
                         } else if (zone === 'left') {
-                            script += `place(win, ${screenVar}, 0, 0.5, 0, 1) -- Left half`;
+                            script += '0, 0, 0.5, 1) -- Left half\\n';
                         } else if (zone === 'right') {
-                            script += `place(win, ${screenVar}, 0.5, 0.5, 0, 1) -- Right half`;
+                            script += '0.5, 0, 0.5, 1) -- Right half\\n';
                         } else if (zone === 'left3') {
-                            script += `place(win, ${screenVar}, 0, 0.33, 0, 1) -- Left third`;
+                            script += '0, 0, 0.33, 1) -- Left third\\n';
                         } else if (zone === 'center3') {
-                            script += `place(win, ${screenVar}, 0.33, 0.34, 0, 1) -- Center third`;
+                            script += '0.33, 0, 0.34, 1) -- Center third\\n';
                         } else if (zone === 'right3') {
-                            script += `place(win, ${screenVar}, 0.67, 0.33, 0, 1) -- Right third`;
+                            script += '0.67, 0, 0.33, 1) -- Right third\\n';
                         }
-                        
-                        script += `
-          break
-        end
-      end`;
                     }
                 });
             });
-
-            script += `
-    end)
-  end)
-end)`;
-
-            document.getElementById('generatedCode').textContent = script;
+            
+            return script;
         }
 
         function copyScript() {
@@ -1463,68 +1149,9 @@ end)`;
             URL.revokeObjectURL(url);
         }
 
-        function updatePresetDisplay() {
-            try {
-                const hotkeyElement = document.getElementById('hotkeyDisplay');
-                const descElement = document.getElementById('presetDesc');
-                if (hotkeyElement) hotkeyElement.textContent = currentHotkey.display;
-                if (descElement) descElement.textContent = currentPresetName + ' - Configure your apps';
-            } catch (error) {
-                console.error('Error updating preset display:', error);
-            }
-        }
-
-        function generateScript() {
-            let script = '-- Hammerspoon Workspace Configuration\\n';
-            script += '-- Generated by Workspace Designer\\n';
-            script += '-- Press the hotkey to activate your workspace!\\n\\n';
-            
-            // Check if current workspace has apps
-            const hasApps = Object.values(workspaceConfig).some(monitor => 
-                Object.values(monitor.apps).some(app => app !== null)
-            );
-            
-            if (hasApps) {
-                const luaKeys = currentHotkey.keys.map(k => '"' + k + '"').join(',');
-                script += 'hs.hotkey.bind({' + luaKeys + '}, "' + currentHotkey.trigger + '", function()\\n';
-                script += '  -- Close all apps except essentials\\n';
-                script += '  local toKeep = { ["Hammerspoon"]=true, ["Finder"]=true }\\n';
-                script += '  for _, app in ipairs(hs.application.runningApplications()) do\\n';
-                script += '    local name = app:name()\\n';
-                script += '    if name and not toKeep[name] then app:kill() end\\n';
-                script += '  end\\n\\n';
-                
-                script += '  hs.timer.doAfter(3, function()\\n';
-                script += '    local screens = {\\n';
-                script += '      one = hs.screen.find(5),\\n';
-                script += '      two = hs.screen.find(2),\\n';
-                script += '      three = hs.screen.find(3),\\n';
-                script += '      four = hs.screen.find(1)\\n';
-                script += '    }\\n\\n';
-                
-                // Launch apps
-                const allApps = new Set();
-                Object.values(workspaceConfig).forEach(monitor => {
-                    Object.values(monitor.apps).forEach(app => {
-                        if (app) allApps.add(app);
-                    });
-                });
-                
-                allApps.forEach(app => {
-                    script += '    hs.application.launchOrFocus("' + app + '")\\n';
-                });
-                
-                script += '\\n    -- Window placement after delay\\n';
-                script += '    hs.timer.doAfter(5, function()\\n';
-                script += '      -- Add window placement logic here\\n';
-                script += '    end)\\n';
-                script += '  end)\\n';
-                script += 'end)';
-            } else {
-                script += '-- Configure your workspace above to generate Lua code';
-            }
-            
-            document.getElementById('generatedCode').textContent = script;
+        // Simplified preset functions for future implementation
+        function savePreset() {
+            alert('Preset saving will be implemented in the next version');
         }
 
     </script>
