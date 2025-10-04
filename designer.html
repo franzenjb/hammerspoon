@@ -155,7 +155,7 @@
             margin-bottom: 10px;
         }
         
-        .tab-item {
+        .tab {
             background: #fed7d7;
             padding: 5px 10px;
             border-radius: 4px;
@@ -163,155 +163,168 @@
             font-size: 0.9rem;
         }
         
-        /* Editor Tab Styles */
+        /* Preset Manager Styles */
         .preset-manager {
             background: #f7fafc;
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
-            border: 2px solid #e2e8f0;
-        }
-        
-        .preset-manager h3 {
-            color: #2d3748;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
         }
         
         .preset-controls {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 20px;
-            align-items: center;
-        }
-        
-        .current-preset {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .preset-actions {
             display: flex;
             gap: 10px;
-        }
-        
-        .preset-btn {
-            background: #4299e1;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        
-        .preset-btn:hover {
-            background: #3182ce;
-        }
-        
-        #preset-selector {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            padding: 5px 10px;
-            min-width: 250px;
-        }
-        
-        .preset-dialog {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
             align-items: center;
-            justify-content: center;
-            z-index: 1000;
+            flex-wrap: wrap;
         }
         
-        .preset-dialog.show {
-            display: flex;
+        .preset-selector {
+            flex: 2;
+            min-width: 200px;
         }
         
-        .dialog-content {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-        }
-        
-        .dialog-content h3 {
-            color: #2d3748;
-            margin-bottom: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            color: #4a5568;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        
-        .hotkey-builder {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr) auto;
-            gap: 10px;
-            align-items: end;
-        }
-        
-        .hotkey-preview {
-            background: #2d3748;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
-            font-size: 0.9rem;
-            text-align: center;
-            min-height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .dialog-actions {
+        .preset-buttons {
             display: flex;
             gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
+            flex-wrap: wrap;
         }
         
-        .dialog-btn {
+        /* Button styles */
+        .btn {
             padding: 8px 16px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
+            transition: all 0.2s;
         }
         
-        .dialog-btn.primary {
+        .btn-primary {
             background: #38b2ac;
             color: white;
         }
         
-        .dialog-btn.secondary {
+        .btn-primary:hover {
+            background: #319795;
+        }
+        
+        .btn-secondary {
             background: #e2e8f0;
             color: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+        
+        .btn-danger {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c53030;
+        }
+        
+        /* Dialog styles */
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .dialog-overlay.active {
+            display: flex;
+        }
+        
+        .dialog {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .dialog h3 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .hotkey-builder {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .hotkey-preview {
+            text-align: center;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            background: #2d3748;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 1.1rem;
+        }
+        
+        .bookmark-list {
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .bookmark-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+        
+        .bookmark-item input {
+            flex: 1;
+            margin: 0;
+        }
+        
+        .bookmark-item button {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        .dialog-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
         }
         
         .editor-layout {
@@ -380,6 +393,17 @@
             font-size: 1.2rem;
         }
         
+        .split-selector {
+            margin-bottom: 15px;
+        }
+        
+        .split-selector select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+        }
+        
         .drop-zones {
             display: grid;
             gap: 10px;
@@ -398,31 +422,28 @@
             border-radius: 6px;
             padding: 15px;
             text-align: center;
-            color: #718096;
-            transition: all 0.3s ease;
-            min-height: 60px;
+            min-height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
+            transition: all 0.2s ease;
         }
         
         .drop-zone:hover {
             border-color: #4299e1;
-            background: #ebf8ff;
+            background: #f7fafc;
         }
         
         .drop-zone.drag-over {
             border-color: #38b2ac;
             background: #e6fffa;
-            border-style: solid;
         }
         
         .drop-zone.has-app {
-            background: #4299e1;
-            color: white;
-            border-color: #3182ce;
             border-style: solid;
+            border-color: #4299e1;
+            background: #ebf8ff;
         }
         
         .remove-btn {
@@ -437,60 +458,79 @@
             height: 20px;
             cursor: pointer;
             font-size: 12px;
-            display: none;
+            line-height: 1;
         }
         
-        .drop-zone.has-app:hover .remove-btn {
-            display: block;
+        .preset-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
         
-        .monitor-controls {
-            margin-bottom: 15px;
+        .preset-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f7fafc;
+            transition: all 0.2s ease;
         }
         
-        .split-selector {
-            background: white;
-            border: 1px solid #e2e8f0;
+        .preset-card:hover {
+            border-color: #4299e1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .preset-card.active {
+            border-color: #38b2ac;
+            background: #e6fffa;
+        }
+        
+        .preset-card h4 {
+            margin: 0 0 10px 0;
+            color: #2d3748;
+        }
+        
+        .preset-card .hotkey {
+            background: #2d3748;
+            color: white;
+            padding: 4px 8px;
             border-radius: 4px;
-            padding: 5px 10px;
-            margin-left: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
         }
         
-        .generate-section {
+        .preset-card .apps {
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .preset-card .monitor {
+            margin-bottom: 8px;
+        }
+        
+        .preset-card .actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .script-section {
             background: #f7fafc;
             border-radius: 8px;
             padding: 20px;
             margin-top: 20px;
         }
         
-        .generate-btn {
-            background: #38b2ac;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        
-        .generate-btn:hover {
-            background: #319795;
-        }
-        
-        .code-output {
+        .script-output {
             background: #2d3748;
             color: #e2e8f0;
-            padding: 20px;
-            border-radius: 6px;
+            padding: 15px;
+            border-radius: 4px;
             font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
             font-size: 0.9rem;
-            line-height: 1.4;
+            white-space: pre-wrap;
             max-height: 400px;
             overflow-y: auto;
-            margin-top: 15px;
-            white-space: pre-wrap;
         }
     </style>
 </head>
@@ -499,8 +539,9 @@
         <h1>🖥️ Jeff's Workspace Designer</h1>
         
         <div class="tabs">
-            <button class="tab active" onclick="showTab('status')">Current Configuration Status</button>
-            <button class="tab" onclick="showTab('editor')">Edit Configuration</button>
+            <button class="tab active" onclick="showTab('status')">Current Status</button>
+            <button class="tab" onclick="showTab('overview')">All Presets</button>
+            <button class="tab" onclick="showTab('edit')">Edit Configuration</button>
         </div>
         
         <!-- Status Tab -->
@@ -531,9 +572,9 @@
                     <div class="app">🌐 Google Chrome (Fullscreen)</div>
                     <div class="chrome-tabs">
                         <h4>Auto-opened tabs:</h4>
-                        <div class="tab-item">Portfolio Showcase</div>
-                        <div class="tab-item">ArcGIS Content Manager</div>
-                        <div class="tab-item">ArcGIS Experience Builder</div>
+                        <div class="tab">Portfolio Showcase</div>
+                        <div class="tab">ArcGIS Content Manager</div>
+                        <div class="tab">ArcGIS Experience Builder</div>
                     </div>
                 </div>
                 
@@ -604,24 +645,34 @@
             </div>
         </div>
         
-        <!-- Editor Tab -->
-        <div id="editor-tab" class="tab-content">
+        <!-- Preset Overview Tab -->
+        <div id="overview-tab" class="tab-content">
+            <h2>🎛️ All Workspace Presets</h2>
+            <div id="preset-overview" class="preset-overview">
+                <!-- Preset cards will be populated here -->
+            </div>
+        </div>
+        
+        <!-- Edit Configuration Tab -->
+        <div id="edit-tab" class="tab-content">
             <div class="preset-manager">
                 <h3>🎛️ Workspace Presets</h3>
                 <div class="preset-controls">
-                    <div class="current-preset">
-                        <strong>Current:</strong> <span id="current-preset-name">Default Workspace</span>
-                        <select id="preset-selector" onchange="loadPreset(this.value)">
-                            <option value="default">Default Workspace (⌘⌥⌃W)</option>
+                    <div class="preset-selector">
+                        <label>Current Preset:</label>
+                        <select id="preset-selector" onchange="switchPreset(this.value)">
+                            <!-- Options populated by JavaScript -->
                         </select>
                     </div>
-                    <div class="preset-actions">
-                        <button class="preset-btn" onclick="showNewPresetDialog()">+ New Preset</button>
-                        <button class="preset-btn" onclick="saveCurrentPreset()">💾 Save Current</button>
-                        <button class="preset-btn" onclick="deleteCurrentPreset()">🗑️ Delete</button>
+                    <div class="preset-buttons">
+                        <button class="btn btn-primary" onclick="showNewPresetDialog()">+ New Preset</button>
+                        <button class="btn btn-secondary" onclick="saveCurrentPreset()">💾 Save Current</button>
+                        <button class="btn btn-secondary" onclick="editCurrentPreset()">✏️ Edit Current</button>
+                        <button class="btn btn-danger" onclick="deleteCurrentPreset()">🗑️ Delete</button>
                     </div>
                 </div>
             </div>
+            
             <div class="editor-layout">
                 <div class="app-palette">
                     <h3>📱 Available Applications</h3>
@@ -648,10 +699,10 @@
                 
                 <div class="workspace-editor">
                     <div class="monitor-editor split-2" id="monitor1">
-                        <div class="monitor-controls">
-                            <strong>Position 1: Samsung1 (Leftmost)</strong>
-                            <select class="split-selector" onchange="changeSplit(1, this.value)">
-                                <option value="split-2">Split (Top/Bottom)</option>
+                        <h3>Position 1: Samsung1 (Leftmost)</h3>
+                        <div class="split-selector">
+                            <select onchange="changeSplit(1, this.value)">
+                                <option value="split-2" selected>Split (Top/Bottom)</option>
                                 <option value="split-1">Single</option>
                             </select>
                         </div>
@@ -668,10 +719,10 @@
                     </div>
                     
                     <div class="monitor-editor split-1" id="monitor2">
-                        <div class="monitor-controls">
-                            <strong>Position 2: Samsung2</strong>
-                            <select class="split-selector" onchange="changeSplit(2, this.value)">
-                                <option value="split-1">Single</option>
+                        <h3>Position 2: Samsung2</h3>
+                        <div class="split-selector">
+                            <select onchange="changeSplit(2, this.value)">
+                                <option value="split-1" selected>Single</option>
                                 <option value="split-2">Split (Top/Bottom)</option>
                             </select>
                         </div>
@@ -684,10 +735,10 @@
                     </div>
                     
                     <div class="monitor-editor split-1" id="monitor3">
-                        <div class="monitor-controls">
-                            <strong>Position 3: UltraWide</strong>
-                            <select class="split-selector" onchange="changeSplit(3, this.value)">
-                                <option value="split-1">Single</option>
+                        <h3>Position 3: UltraWide</h3>
+                        <div class="split-selector">
+                            <select onchange="changeSplit(3, this.value)">
+                                <option value="split-1" selected>Single</option>
                                 <option value="split-2">Split (Left/Right)</option>
                             </select>
                         </div>
@@ -700,10 +751,10 @@
                     </div>
                     
                     <div class="monitor-editor split-1" id="monitor4">
-                        <div class="monitor-controls">
-                            <strong>Position 4: MacBook (Rightmost)</strong>
-                            <select class="split-selector" onchange="changeSplit(4, this.value)">
-                                <option value="split-1">Single</option>
+                        <h3>Position 4: MacBook (Rightmost)</h3>
+                        <div class="split-selector">
+                            <select onchange="changeSplit(4, this.value)">
+                                <option value="split-1" selected>Single</option>
                                 <option value="split-2">Split (Top/Bottom)</option>
                             </select>
                         </div>
@@ -717,46 +768,49 @@
                 </div>
             </div>
             
-            <div class="generate-section">
-                <h3>🚀 Generate Hammerspoon Configuration</h3>
-                <button class="generate-btn" onclick="generateLuaScript()">Generate Lua Script</button>
-                <button class="generate-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
-                <div class="code-output" id="generated-code">
--- Click "Generate Lua Script" to create your Hammerspoon configuration
+            <div class="script-section">
+                <h3>🚀 Generate & Deploy Hammerspoon Configuration</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="btn btn-primary" onclick="generateAndSaveScript()">⚡ Auto-Deploy to Hammerspoon</button>
+                    <button class="btn btn-secondary" onclick="generateScript()">📝 Generate Script Only</button>
+                    <button class="btn btn-secondary" onclick="copyScript()">📋 Copy to Clipboard</button>
                 </div>
+                <div class="script-output" id="script-output">-- Click "Generate Script" to create your Hammerspoon configuration</div>
             </div>
         </div>
     </div>
-
-    <!-- New Preset Dialog -->
-    <div class="preset-dialog" id="preset-dialog">
-        <div class="dialog-content">
-            <h3>Create New Workspace Preset</h3>
+    
+    <!-- New/Edit Preset Dialog -->
+    <div id="preset-dialog" class="dialog-overlay">
+        <div class="dialog">
+            <h3 id="dialog-title">Create New Workspace Preset</h3>
+            
             <div class="form-group">
                 <label for="preset-name">Preset Name</label>
                 <input type="text" id="preset-name" placeholder="e.g., Coding Mode, Meeting Setup, etc.">
             </div>
+            
             <div class="form-group">
                 <label>Hotkey Configuration</label>
                 <div class="hotkey-builder">
                     <div>
                         <label>Command</label>
                         <select id="hotkey-cmd">
-                            <option value="true">✓ Command</option>
+                            <option value="true" selected>✓ Command</option>
                             <option value="false">✗ Command</option>
                         </select>
                     </div>
                     <div>
                         <label>Option</label>
                         <select id="hotkey-alt">
-                            <option value="true">✓ Option</option>
+                            <option value="true" selected>✓ Option</option>
                             <option value="false">✗ Option</option>
                         </select>
                     </div>
                     <div>
                         <label>Control</label>
                         <select id="hotkey-ctrl">
-                            <option value="true">✓ Control</option>
+                            <option value="true" selected>✓ Control</option>
                             <option value="false">✗ Control</option>
                         </select>
                     </div>
@@ -794,9 +848,17 @@
                 </div>
                 <div class="hotkey-preview" id="hotkey-preview">⌘⌥⌃W</div>
             </div>
-            <div class="dialog-actions">
-                <button class="dialog-btn secondary" onclick="hideNewPresetDialog()">Cancel</button>
-                <button class="dialog-btn primary" onclick="createNewPreset()">Create Preset</button>
+            
+            <div class="form-group">
+                <label for="chrome-bookmarks">Chrome Bookmarks (one URL per line)</label>
+                <textarea id="chrome-bookmarks" rows="4" placeholder="https://franzenjb.github.io/portfolio-showcase/
+https://experience.arcgis.com/
+https://www.arcgis.com/home/content.html"></textarea>
+            </div>
+            
+            <div class="dialog-buttons">
+                <button class="btn btn-secondary" onclick="hidePresetDialog()">Cancel</button>
+                <button class="btn btn-primary" onclick="savePreset()">Create Preset</button>
             </div>
         </div>
     </div>
@@ -809,6 +871,10 @@
             
             document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
             document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            if (tabName === 'overview') {
+                updatePresetOverview();
+            }
         }
 
         // Workspace configuration state
@@ -824,6 +890,11 @@
             'default': {
                 name: 'Default Workspace',
                 hotkey: { cmd: true, alt: true, ctrl: true, letter: 'W' },
+                bookmarks: [
+                    'https://franzenjb.github.io/portfolio-showcase/',
+                    'https://experience.arcgis.com/',
+                    'https://www.arcgis.com/home/content.html'
+                ],
                 config: {
                     1: { split: 'split-2', apps: { top: 'Microsoft Outlook', bottom: 'Microsoft Teams' } },
                     2: { split: 'split-1', apps: { full: 'Terminal' } },
@@ -833,6 +904,7 @@
             }
         };
         let currentPresetId = 'default';
+        let editingPresetId = null;
 
         // Initialize drag and drop
         document.addEventListener('DOMContentLoaded', function() {
@@ -900,7 +972,8 @@
             const dropZone = document.querySelector(`[data-monitor="${monitor}"][data-zone="${zone}"]`);
             if (dropZone && app) {
                 const appIcon = getAppIcon(app);
-                dropZone.innerHTML = `<span>${appIcon} ${app}</span><button class="remove-btn" onclick="removeApp(${monitor}, '${zone}')">&times;</button>`;
+                const displayName = app === 'Google Chrome' && monitor == 3 ? 'Google Chrome (3 tabs)' : app;
+                dropZone.innerHTML = `<span>${appIcon} ${displayName}</span><button class="remove-btn" onclick="removeApp(${monitor}, '${zone}')">&times;</button>`;
                 dropZone.classList.add('has-app');
             }
         }
@@ -998,294 +1071,341 @@
                 if (presetId === currentPresetId) option.selected = true;
                 selector.appendChild(option);
             });
+        }
+
+        function updatePresetOverview() {
+            const overview = document.getElementById('preset-overview');
+            overview.innerHTML = '';
             
-            document.getElementById('current-preset-name').textContent = workspacePresets[currentPresetId].name;
+            Object.keys(workspacePresets).forEach(presetId => {
+                const preset = workspacePresets[presetId];
+                const card = document.createElement('div');
+                card.className = `preset-card ${presetId === currentPresetId ? 'active' : ''}`;
+                
+                const hotkey = formatHotkey(preset.hotkey);
+                let appsHtml = '';
+                Object.keys(preset.config).forEach(monitor => {
+                    const config = preset.config[monitor];
+                    const apps = Object.values(config.apps).filter(app => app).join(', ');
+                    if (apps) {
+                        appsHtml += `<div class="monitor">Monitor ${monitor}: ${apps}</div>`;
+                    }
+                });
+                
+                card.innerHTML = `
+                    <h4>${preset.name}</h4>
+                    <div class="hotkey">${hotkey}</div>
+                    <div class="apps">${appsHtml}</div>
+                    <div class="actions">
+                        <button class="btn btn-primary" onclick="switchPreset('${presetId}')">Load</button>
+                        <button class="btn btn-secondary" onclick="editPreset('${presetId}')">Edit</button>
+                        ${presetId !== 'default' ? `<button class="btn btn-danger" onclick="deletePreset('${presetId}')">Delete</button>` : ''}
+                    </div>
+                `;
+                overview.appendChild(card);
+            });
         }
 
-        function formatHotkey(hotkey) {
-            let result = '';
-            if (hotkey.cmd) result += '⌘';
-            if (hotkey.alt) result += '⌥';
-            if (hotkey.ctrl) result += '⌃';
-            result += hotkey.letter;
-            return result;
-        }
-
-        function showNewPresetDialog() {
-            document.getElementById('preset-dialog').classList.add('show');
-            document.getElementById('preset-name').value = '';
-            document.getElementById('preset-name').focus();
-        }
-
-        function hideNewPresetDialog() {
-            document.getElementById('preset-dialog').classList.remove('show');
-        }
-
-        function updateHotkeyPreview() {
-            const cmd = document.getElementById('hotkey-cmd').value === 'true';
-            const alt = document.getElementById('hotkey-alt').value === 'true';
-            const ctrl = document.getElementById('hotkey-ctrl').value === 'true';
-            const letter = document.getElementById('hotkey-letter').value;
-            
-            const hotkey = { cmd, alt, ctrl, letter };
-            document.getElementById('hotkey-preview').textContent = formatHotkey(hotkey);
-        }
-
-        function createNewPreset() {
-            const name = document.getElementById('preset-name').value.trim();
-            if (!name) {
-                alert('Please enter a preset name');
-                return;
-            }
-
-            const cmd = document.getElementById('hotkey-cmd').value === 'true';
-            const alt = document.getElementById('hotkey-alt').value === 'true';
-            const ctrl = document.getElementById('hotkey-ctrl').value === 'true';
-            const letter = document.getElementById('hotkey-letter').value;
-
-            // Check for hotkey conflicts
-            const newHotkeyStr = formatHotkey({ cmd, alt, ctrl, letter });
-            const conflict = Object.values(workspacePresets).find(preset => 
-                formatHotkey(preset.hotkey) === newHotkeyStr
-            );
-            
-            if (conflict) {
-                alert(`Hotkey ${newHotkeyStr} is already used by "${conflict.name}"`);
-                return;
-            }
-
-            const presetId = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-            workspacePresets[presetId] = {
-                name: name,
-                hotkey: { cmd, alt, ctrl, letter },
-                config: JSON.parse(JSON.stringify(workspaceConfig)) // Deep copy
-            };
-
+        function switchPreset(presetId) {
             currentPresetId = presetId;
-            savePresets();
-            updatePresetSelector();
-            hideNewPresetDialog();
-        }
-
-        function loadPreset(presetId) {
-            if (!workspacePresets[presetId]) return;
+            const preset = workspacePresets[presetId];
+            workspaceConfig = { ...preset.config };
             
-            currentPresetId = presetId;
-            workspaceConfig = JSON.parse(JSON.stringify(workspacePresets[presetId].config));
-            
-            // Update the UI
+            // Update UI to reflect new configuration
             Object.keys(workspaceConfig).forEach(monitor => {
                 const config = workspaceConfig[monitor];
                 const monitorElement = document.getElementById(`monitor${monitor}`);
-                monitorElement.className = `monitor-editor ${config.split}`;
-                
-                // Update split selector
-                const splitSelector = monitorElement.querySelector('.split-selector');
+                const splitSelector = monitorElement.querySelector('select');
                 splitSelector.value = config.split;
+                changeSplit(parseInt(monitor), config.split);
                 
-                // Rebuild drop zones
-                changeSplit(monitor, config.split);
-                
-                // Populate with apps
+                // Apply apps
                 Object.keys(config.apps).forEach(zone => {
-                    const app = config.apps[zone];
-                    if (app) {
-                        updateDropZone(monitor, zone, app);
+                    if (config.apps[zone]) {
+                        updateDropZone(monitor, zone, config.apps[zone]);
                     }
                 });
             });
             
             updatePresetSelector();
+            updatePresetOverview();
+            showTab('edit');
         }
 
         function saveCurrentPreset() {
-            workspacePresets[currentPresetId].config = JSON.parse(JSON.stringify(workspaceConfig));
-            savePresets();
-            alert(`Saved changes to "${workspacePresets[currentPresetId].name}"`);
+            if (currentPresetId) {
+                workspacePresets[currentPresetId].config = { ...workspaceConfig };
+                savePresets();
+                alert('Current configuration saved to preset!');
+                updatePresetOverview();
+            }
         }
 
         function deleteCurrentPreset() {
             if (currentPresetId === 'default') {
-                alert('Cannot delete the default workspace');
+                alert('Cannot delete the default preset.');
                 return;
             }
             
             if (confirm(`Delete preset "${workspacePresets[currentPresetId].name}"?`)) {
                 delete workspacePresets[currentPresetId];
                 currentPresetId = 'default';
-                workspaceConfig = JSON.parse(JSON.stringify(workspacePresets.default.config));
+                switchPreset('default');
                 savePresets();
-                loadPreset('default');
+                updatePresetOverview();
             }
         }
 
-        function generateLuaScript() {
-            let script = `-- Hammerspoon Workspace Configuration
--- Generated by Jeff's Workspace Designer
--- Updated: ${new Date().toLocaleString()}
--- Multiple Presets Available
-
-`;
-
-            // Generate all presets
-            Object.keys(workspacePresets).forEach(presetId => {
-                const preset = workspacePresets[presetId];
-                const hotkey = preset.hotkey;
-                const luaKeys = [];
-                if (hotkey.cmd) luaKeys.push('"cmd"');
-                if (hotkey.alt) luaKeys.push('"alt"');
-                if (hotkey.ctrl) luaKeys.push('"ctrl"');
-                
-                // Generate this preset's configuration
-                const config = preset.config;
-                const allApps = new Set();
-                Object.values(config).forEach(monitor => {
-                    Object.values(monitor.apps).forEach(app => {
-                        if (app) allApps.add(app);
-                    });
-                });
-
-                script += `
-  local toKeep = {
-    ["Hammerspoon"]=true, ["Finder"]=true, ["Raycast"]=true,
-    ["Terminal"]=true, ["iTerm2"]=true, ["Claude Code"]=true
-  }
-
-  for _, app in ipairs(hs.application.runningApplications()) do
-    local name = app:name()
-    if name and not toKeep[name] then app:kill() end
-  end
-
-  hs.timer.doAfter(3, function()
-    local screens = hs.screen.allScreens()
-    local samsung1 = screens[4]  -- Position 1: Samsung1 (leftmost)
-    local samsung2 = screens[3]  -- Position 2: Samsung2
-    local ultrawide = screens[1] -- Position 3: UltraWide
-    local macbook = screens[2]   -- Position 4: MacBook
-
-    -- Launch applications
-`;
-
-                // Launch apps for this preset
-                allApps.forEach(app => {
-                    script += `    hs.application.launchOrFocus("${app}")
-`;
-                });
-
-                // Special Chrome handling if present
-                if (allApps.has('Google Chrome')) {
-                    script += `
-    -- Launch Chrome with 3 tabs
-    hs.timer.doAfter(1, function()
-      os.execute("pkill -f 'Google Chrome'")
-      hs.timer.doAfter(2, function()
-        local tabs = {
-          "https://franzenjb.github.io/portfolio-showcase/",
-          "https://arc-nhq-gis.maps.arcgis.com/home/content.html",
-          "https://experience.arcgis.com/experience/1057b83e298b42bf88c9d1f82619d026"
+        function editCurrentPreset() {
+            editPreset(currentPresetId);
         }
-        for i, url in ipairs(tabs) do
-          hs.timer.doAfter(i * 0.5, function()
-            hs.urlevent.openURL(url)
-          end)
-        end
-      end)
-    end)
-`;
+
+        function editPreset(presetId) {
+            editingPresetId = presetId;
+            const preset = workspacePresets[presetId];
+            
+            document.getElementById('dialog-title').textContent = 'Edit Workspace Preset';
+            document.getElementById('preset-name').value = preset.name;
+            document.getElementById('hotkey-cmd').value = preset.hotkey.cmd;
+            document.getElementById('hotkey-alt').value = preset.hotkey.alt;
+            document.getElementById('hotkey-ctrl').value = preset.hotkey.ctrl;
+            document.getElementById('hotkey-letter').value = preset.hotkey.letter;
+            document.getElementById('chrome-bookmarks').value = (preset.bookmarks || []).join('\n');
+            
+            updateHotkeyPreview();
+            document.querySelector('.dialog .btn-primary').textContent = 'Save Changes';
+            document.getElementById('preset-dialog').classList.add('active');
+        }
+
+        function deletePreset(presetId) {
+            if (presetId === 'default') {
+                alert('Cannot delete the default preset.');
+                return;
+            }
+            
+            if (confirm(`Delete preset "${workspacePresets[presetId].name}"?`)) {
+                delete workspacePresets[presetId];
+                if (currentPresetId === presetId) {
+                    currentPresetId = 'default';
+                    switchPreset('default');
                 }
+                savePresets();
+                updatePresetOverview();
+            }
+        }
 
-                script += `
-    -- Window arrangement after delay
-    hs.timer.doAfter(8, function()
-      local function arrangeWindow(appName, screen, x, y, w, h)
-        local app = hs.application.find(appName)
-        if app and screen then
-          local win = app:mainWindow()
-          if win then
-            local f = screen:frame()
-            win:moveToScreen(screen)
-            win:setFrame({x=f.x+f.w*x, y=f.y+f.h*y, w=f.w*w, h=f.h*h})
-          end
-        end
-      end
+        function showNewPresetDialog() {
+            editingPresetId = null;
+            document.getElementById('dialog-title').textContent = 'Create New Workspace Preset';
+            document.getElementById('preset-name').value = '';
+            document.getElementById('hotkey-cmd').value = 'true';
+            document.getElementById('hotkey-alt').value = 'true';
+            document.getElementById('hotkey-ctrl').value = 'true';
+            document.getElementById('hotkey-letter').value = 'W';
+            document.getElementById('chrome-bookmarks').value = '';
+            
+            updateHotkeyPreview();
+            document.querySelector('.dialog .btn-primary').textContent = 'Create Preset';
+            document.getElementById('preset-dialog').classList.add('active');
+        }
 
-`;
+        function hidePresetDialog() {
+            document.getElementById('preset-dialog').classList.remove('active');
+            editingPresetId = null;
+        }
 
-                // Generate window arrangements for this preset
-                const screenMap = ['samsung1', 'samsung2', 'ultrawide', 'macbook'];
-                Object.keys(config).forEach(monitor => {
-                    const monitorConfig = config[monitor];
-                    const screenVar = screenMap[monitor - 1];
-                    
-                    if (monitorConfig.split === 'split-2') {
-                        if (monitorConfig.apps.top) {
-                            script += `      arrangeWindow("${monitorConfig.apps.top}", ${screenVar}, 0, 0, 1, 0.5)
-`;
+        function savePreset() {
+            const name = document.getElementById('preset-name').value.trim();
+            if (!name) {
+                alert('Please enter a preset name.');
+                return;
+            }
+            
+            const hotkey = {
+                cmd: document.getElementById('hotkey-cmd').value === 'true',
+                alt: document.getElementById('hotkey-alt').value === 'true',
+                ctrl: document.getElementById('hotkey-ctrl').value === 'true',
+                letter: document.getElementById('hotkey-letter').value
+            };
+            
+            const bookmarks = document.getElementById('chrome-bookmarks').value
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line);
+            
+            // Check for hotkey conflicts
+            const hotkeyString = formatHotkey(hotkey);
+            const existingPreset = Object.keys(workspacePresets).find(id => 
+                id !== editingPresetId && formatHotkey(workspacePresets[id].hotkey) === hotkeyString
+            );
+            
+            if (existingPreset) {
+                alert(`Hotkey ${hotkeyString} is already used by "${workspacePresets[existingPreset].name}"`);
+                return;
+            }
+            
+            const presetId = editingPresetId || generatePresetId(name);
+            workspacePresets[presetId] = {
+                name: name,
+                hotkey: hotkey,
+                bookmarks: bookmarks,
+                config: { ...workspaceConfig }
+            };
+            
+            if (!editingPresetId) {
+                currentPresetId = presetId;
+            }
+            
+            savePresets();
+            updatePresetSelector();
+            updatePresetOverview();
+            hidePresetDialog();
+            
+            alert(editingPresetId ? 'Preset updated!' : 'New preset created!');
+        }
+
+        function generatePresetId(name) {
+            return name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        }
+
+        function formatHotkey(hotkey) {
+            let parts = [];
+            if (hotkey.cmd) parts.push('⌘');
+            if (hotkey.alt) parts.push('⌥');
+            if (hotkey.ctrl) parts.push('⌃');
+            parts.push(hotkey.letter);
+            return parts.join('');
+        }
+
+        function updateHotkeyPreview() {
+            const hotkey = {
+                cmd: document.getElementById('hotkey-cmd').value === 'true',
+                alt: document.getElementById('hotkey-alt').value === 'true',
+                ctrl: document.getElementById('hotkey-ctrl').value === 'true',
+                letter: document.getElementById('hotkey-letter').value
+            };
+            document.getElementById('hotkey-preview').textContent = formatHotkey(hotkey);
+        }
+
+        function generateScript() {
+            const preset = workspacePresets[currentPresetId];
+            let script = `-- Hammerspoon Workspace Configuration: ${preset.name}\n`;
+            script += `-- Generated by Workspace Designer\n`;
+            script += `-- Press ${formatHotkey(preset.hotkey)} to activate this workspace!\n\n`;
+            
+            // Generate hotkey binding
+            const keys = [];
+            if (preset.hotkey.cmd) keys.push('"cmd"');
+            if (preset.hotkey.alt) keys.push('"alt"');
+            if (preset.hotkey.ctrl) keys.push('"ctrl"');
+            
+            script += `hs.hotkey.bind({${keys.join(', ')}}, "${preset.hotkey.letter}", function()\n`;
+            script += `  -- Close all apps except essentials\n`;
+            script += `  local toKeep = { ["Hammerspoon"]=true, ["Finder"]=true }\n`;
+            script += `  for _, app in ipairs(hs.application.runningApplications()) do\n`;
+            script += `    local name = app:name()\n`;
+            script += `    if name and not toKeep[name] then app:kill() end\n`;
+            script += `  end\n\n`;
+            
+            script += `  hs.timer.doAfter(3, function()\n`;
+            script += `    local screens = {\n`;
+            script += `      samsung1 = hs.screen.find(4),  -- Position 1: Samsung1 (Leftmost)\n`;
+            script += `      samsung2 = hs.screen.find(3),  -- Position 2: Samsung2\n`;
+            script += `      ultrawide = hs.screen.find(1), -- Position 3: UltraWide\n`;
+            script += `      macbook = hs.screen.find(2)    -- Position 4: MacBook (Rightmost)\n`;
+            script += `    }\n\n`;
+            
+            // Launch apps
+            const allApps = new Set();
+            Object.values(workspaceConfig).forEach(monitor => {
+                Object.values(monitor.apps).forEach(app => {
+                    if (app) allApps.add(app);
+                });
+            });
+            
+            allApps.forEach(app => {
+                script += `    hs.application.launchOrFocus("${app}")\n`;
+            });
+            
+            // Chrome bookmarks
+            if (preset.bookmarks && preset.bookmarks.length > 0) {
+                script += `\n    -- Open Chrome bookmarks\n`;
+                preset.bookmarks.forEach(bookmark => {
+                    script += `    hs.urlevent.openURL("${bookmark}")\n`;
+                });
+            }
+            
+            script += `\n    -- Window placement after delay\n`;
+            script += `    hs.timer.doAfter(5, function()\n`;
+            
+            // Generate window placement code
+            const screenMap = { 1: 'samsung1', 2: 'samsung2', 3: 'ultrawide', 4: 'macbook' };
+            Object.keys(workspaceConfig).forEach(monitor => {
+                const config = workspaceConfig[monitor];
+                const screenName = screenMap[monitor];
+                
+                Object.keys(config.apps).forEach(zone => {
+                    const app = config.apps[zone];
+                    if (app) {
+                        script += `      local ${app.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}App = hs.application.find("${app}")\n`;
+                        script += `      if ${app.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}App then\n`;
+                        script += `        local win = ${app.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}App:mainWindow()\n`;
+                        script += `        if win then\n`;
+                        
+                        if (zone === 'top') {
+                            script += `          win:moveToScreen(screens.${screenName}):maximize():moveToUnit({0, 0, 1, 0.5})\n`;
+                        } else if (zone === 'bottom') {
+                            script += `          win:moveToScreen(screens.${screenName}):maximize():moveToUnit({0, 0.5, 1, 0.5})\n`;
+                        } else if (zone === 'left') {
+                            script += `          win:moveToScreen(screens.${screenName}):maximize():moveToUnit({0, 0, 0.5, 1})\n`;
+                        } else if (zone === 'right') {
+                            script += `          win:moveToScreen(screens.${screenName}):maximize():moveToUnit({0.5, 0, 0.5, 1})\n`;
+                        } else {
+                            script += `          win:moveToScreen(screens.${screenName}):maximize()\n`;
                         }
-                        if (monitorConfig.apps.bottom) {
-                            script += `      arrangeWindow("${monitorConfig.apps.bottom}", ${screenVar}, 0, 0.5, 1, 0.5)
-`;
-                        }
-                        if (monitorConfig.apps.left) {
-                            script += `      arrangeWindow("${monitorConfig.apps.left}", ${screenVar}, 0, 0, 0.5, 1)
-`;
-                        }
-                        if (monitorConfig.apps.right) {
-                            script += `      arrangeWindow("${monitorConfig.apps.right}", ${screenVar}, 0.5, 0, 0.5, 1)
-`;
-                        }
-                    } else if (monitorConfig.apps.full) {
-                        script += `      arrangeWindow("${monitorConfig.apps.full}", ${screenVar}, 0, 0, 1, 1)
-`;
+                        
+                        script += `        end\n`;
+                        script += `      end\n\n`;
                     }
                 });
-
-                script += `
-      hs.alert.show("${preset.name} Ready!")
-    end)
-  end)
-end)
-
-`;
             });
-
-            // Add helper hotkeys
-            script += `-- Individual monitor movement (⌘⌥⌃1-4)
-for i = 1, 4 do
-  hs.hotkey.bind({"cmd","alt","ctrl"}, tostring(i), function()
-    local screens = hs.screen.allScreens()
-    local screenMap = {screens[4], screens[3], screens[1], screens[2]}
-    local app = hs.application.frontmostApplication()
-    if app and screenMap[i] then
-      local win = app:mainWindow()
-      if win then
-        win:moveToScreen(screenMap[i])
-        win:setFrame(screenMap[i]:frame())
-      end
-    end
-  end)
-end
-
--- Test hotkey
-hs.hotkey.bind({"cmd","alt","ctrl"}, "T", function()
-  hs.alert.show("Hammerspoon is working! 🎉")
-end)
-
--- Gentle Mode (works with any current preset)
-hs.hotkey.bind({"cmd","alt","ctrl"}, "G", function()
-  hs.alert.show("Gentle mode: Use your preset hotkeys for full layouts")
-end)
-
--- Configuration loaded
-hs.alert.show("Multiple Workspace Presets Loaded! Press ⌘⌥⌃T to test")`;
-
-            document.getElementById('generated-code').textContent = script;
+            
+            script += `    end)\n`;
+            script += `  end)\n`;
+            script += `end)\n\n`;
+            
+            // Add other hotkeys
+            script += `-- Additional hotkeys\n`;
+            script += `hs.hotkey.bind({"cmd", "alt", "ctrl"}, "G", function()\n`;
+            script += `  -- Gentle mode - arrange windows without closing apps\n`;
+            script += `  -- (Add gentle mode logic here)\n`;
+            script += `end)\n`;
+            
+            document.getElementById('script-output').textContent = script;
         }
 
-        function copyToClipboard() {
-            const code = document.getElementById('generated-code').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                alert('Configuration copied to clipboard! Paste it into ~/.hammerspoon/init.lua');
+        function generateAndSaveScript() {
+            generateScript();
+            const script = document.getElementById('script-output').textContent;
+            
+            // Create blob and download
+            const blob = new Blob([script], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'init.lua';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('🚀 Hammerspoon configuration downloaded!\n\nTo activate:\n1. Replace ~/.hammerspoon/init.lua with the downloaded file\n2. Reload Hammerspoon configuration\n3. Use your custom hotkey to activate the workspace');
+        }
+
+        function copyScript() {
+            const script = document.getElementById('script-output').textContent;
+            navigator.clipboard.writeText(script).then(() => {
+                alert('Script copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy script:', err);
             });
         }
     </script>
