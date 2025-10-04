@@ -295,29 +295,40 @@
             font-size: 1.1rem;
         }
         
-        .bookmark-list {
-            border: 1px solid #e2e8f0;
+        .chrome-config {
+            background: #fff5f5;
+            border: 1px solid #fc8181;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .chrome-config h4 {
+            margin: 0 0 10px 0;
+            color: #c53030;
+        }
+        
+        .chrome-instance {
+            background: #fed7d7;
             border-radius: 4px;
             padding: 10px;
-            max-height: 150px;
+            margin-bottom: 10px;
+        }
+        
+        .chrome-instance h5 {
+            margin: 0 0 8px 0;
+            color: #c53030;
+        }
+        
+        .chrome-bookmarks {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 8px;
+            min-height: 60px;
+            max-height: 100px;
             overflow-y: auto;
-        }
-        
-        .bookmark-item {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 8px;
-            align-items: center;
-        }
-        
-        .bookmark-item input {
-            flex: 1;
-            margin: 0;
-        }
-        
-        .bookmark-item button {
-            padding: 4px 8px;
-            font-size: 12px;
+            font-size: 0.9rem;
         }
         
         .dialog-buttons {
@@ -428,6 +439,7 @@
             justify-content: center;
             position: relative;
             transition: all 0.2s ease;
+            flex-direction: column;
         }
         
         .drop-zone:hover {
@@ -446,6 +458,11 @@
             background: #ebf8ff;
         }
         
+        .drop-zone.has-chrome {
+            border-color: #38b2ac;
+            background: #e6fffa;
+        }
+        
         .remove-btn {
             position: absolute;
             top: 5px;
@@ -459,6 +476,21 @@
             cursor: pointer;
             font-size: 12px;
             line-height: 1;
+        }
+        
+        .chrome-btn {
+            background: #38b2ac;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 10px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        
+        .chrome-btn:hover {
+            background: #319795;
         }
         
         .preset-overview {
@@ -743,8 +775,9 @@
                             </select>
                         </div>
                         <div class="drop-zones">
-                            <div class="drop-zone has-app" data-monitor="3" data-zone="full">
-                                <span>🌐 Google Chrome (3 tabs)</span>
+                            <div class="drop-zone has-app has-chrome" data-monitor="3" data-zone="full">
+                                <span>🌐 Google Chrome</span>
+                                <button class="chrome-btn" onclick="configureChromeBookmarks(3, 'full')">⚙️ Bookmarks</button>
                                 <button class="remove-btn" onclick="removeApp(3, 'full')">&times;</button>
                             </div>
                         </div>
@@ -849,16 +882,29 @@
                 <div class="hotkey-preview" id="hotkey-preview">⌘⌥⌃W</div>
             </div>
             
+            <div class="dialog-buttons">
+                <button class="btn btn-secondary" onclick="hidePresetDialog()">Cancel</button>
+                <button class="btn btn-primary" onclick="savePreset()">Create Preset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chrome Bookmarks Dialog -->
+    <div id="chrome-dialog" class="dialog-overlay">
+        <div class="dialog">
+            <h3 id="chrome-dialog-title">Configure Chrome Bookmarks</h3>
+            <p>Configure bookmarks for: <strong id="chrome-location"></strong></p>
+            
             <div class="form-group">
-                <label for="chrome-bookmarks">Chrome Bookmarks (one URL per line)</label>
-                <textarea id="chrome-bookmarks" rows="4" placeholder="https://franzenjb.github.io/portfolio-showcase/
+                <label for="chrome-bookmarks-input">Bookmarks (one URL per line)</label>
+                <textarea id="chrome-bookmarks-input" rows="6" placeholder="https://franzenjb.github.io/portfolio-showcase/
 https://experience.arcgis.com/
 https://www.arcgis.com/home/content.html"></textarea>
             </div>
             
             <div class="dialog-buttons">
-                <button class="btn btn-secondary" onclick="hidePresetDialog()">Cancel</button>
-                <button class="btn btn-primary" onclick="savePreset()">Create Preset</button>
+                <button class="btn btn-secondary" onclick="hideChromeDialog()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveChromeBookmarks()">Save Bookmarks</button>
             </div>
         </div>
     </div>
@@ -881,7 +927,7 @@ https://www.arcgis.com/home/content.html"></textarea>
         let workspaceConfig = {
             1: { split: 'split-2', apps: { top: 'Microsoft Outlook', bottom: 'Microsoft Teams' } },
             2: { split: 'split-1', apps: { full: 'Terminal' } },
-            3: { split: 'split-1', apps: { full: 'Google Chrome' } },
+            3: { split: 'split-1', apps: { full: 'Google Chrome' }, chromeBookmarks: { full: ['https://franzenjb.github.io/portfolio-showcase/', 'https://experience.arcgis.com/', 'https://www.arcgis.com/home/content.html'] } },
             4: { split: 'split-1', apps: { full: 'Notion' } }
         };
 
@@ -890,21 +936,17 @@ https://www.arcgis.com/home/content.html"></textarea>
             'default': {
                 name: 'Default Workspace',
                 hotkey: { cmd: true, alt: true, ctrl: true, letter: 'W' },
-                bookmarks: [
-                    'https://franzenjb.github.io/portfolio-showcase/',
-                    'https://experience.arcgis.com/',
-                    'https://www.arcgis.com/home/content.html'
-                ],
                 config: {
                     1: { split: 'split-2', apps: { top: 'Microsoft Outlook', bottom: 'Microsoft Teams' } },
                     2: { split: 'split-1', apps: { full: 'Terminal' } },
-                    3: { split: 'split-1', apps: { full: 'Google Chrome' } },
+                    3: { split: 'split-1', apps: { full: 'Google Chrome' }, chromeBookmarks: { full: ['https://franzenjb.github.io/portfolio-showcase/', 'https://experience.arcgis.com/', 'https://www.arcgis.com/home/content.html'] } },
                     4: { split: 'split-1', apps: { full: 'Notion' } }
                 }
             }
         };
         let currentPresetId = 'default';
         let editingPresetId = null;
+        let currentChromeConfig = { monitor: null, zone: null };
 
         // Initialize drag and drop
         document.addEventListener('DOMContentLoaded', function() {
@@ -972,17 +1014,66 @@ https://www.arcgis.com/home/content.html"></textarea>
             const dropZone = document.querySelector(`[data-monitor="${monitor}"][data-zone="${zone}"]`);
             if (dropZone && app) {
                 const appIcon = getAppIcon(app);
-                const displayName = app === 'Google Chrome' && monitor == 3 ? 'Google Chrome (3 tabs)' : app;
-                dropZone.innerHTML = `<span>${appIcon} ${displayName}</span><button class="remove-btn" onclick="removeApp(${monitor}, '${zone}')">&times;</button>`;
+                let html = `<span>${appIcon} ${app}</span>`;
+                
+                // Add Chrome bookmark button if it's Chrome
+                if (app === 'Google Chrome') {
+                    html += `<button class="chrome-btn" onclick="configureChromeBookmarks(${monitor}, '${zone}')">⚙️ Bookmarks</button>`;
+                    dropZone.classList.add('has-chrome');
+                } else {
+                    dropZone.classList.remove('has-chrome');
+                }
+                
+                html += `<button class="remove-btn" onclick="removeApp(${monitor}, '${zone}')">&times;</button>`;
+                dropZone.innerHTML = html;
                 dropZone.classList.add('has-app');
             }
         }
 
         function removeApp(monitor, zone) {
             workspaceConfig[monitor].apps[zone] = null;
+            // Also remove Chrome bookmarks if it was Chrome
+            if (workspaceConfig[monitor].chromeBookmarks && workspaceConfig[monitor].chromeBookmarks[zone]) {
+                delete workspaceConfig[monitor].chromeBookmarks[zone];
+            }
             const dropZone = document.querySelector(`[data-monitor="${monitor}"][data-zone="${zone}"]`);
             dropZone.innerHTML = `<span>Drop app here</span>`;
-            dropZone.classList.remove('has-app');
+            dropZone.classList.remove('has-app', 'has-chrome');
+        }
+
+        function configureChromeBookmarks(monitor, zone) {
+            currentChromeConfig = { monitor, zone };
+            const positionNames = { 1: 'Samsung1 (Leftmost)', 2: 'Samsung2', 3: 'UltraWide', 4: 'MacBook (Rightmost)' };
+            const zoneNames = { top: 'Top Half', bottom: 'Bottom Half', left: 'Left Half', right: 'Right Half', full: 'Fullscreen' };
+            
+            document.getElementById('chrome-location').textContent = `Position ${monitor}: ${positionNames[monitor]} - ${zoneNames[zone]}`;
+            
+            // Load existing bookmarks
+            const existing = workspaceConfig[monitor].chromeBookmarks?.[zone] || [];
+            document.getElementById('chrome-bookmarks-input').value = existing.join('\n');
+            
+            document.getElementById('chrome-dialog').classList.add('active');
+        }
+
+        function hideChromeDialog() {
+            document.getElementById('chrome-dialog').classList.remove('active');
+            currentChromeConfig = { monitor: null, zone: null };
+        }
+
+        function saveChromeBookmarks() {
+            const { monitor, zone } = currentChromeConfig;
+            const bookmarks = document.getElementById('chrome-bookmarks-input').value
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line);
+            
+            if (!workspaceConfig[monitor].chromeBookmarks) {
+                workspaceConfig[monitor].chromeBookmarks = {};
+            }
+            workspaceConfig[monitor].chromeBookmarks[zone] = bookmarks;
+            
+            hideChromeDialog();
+            alert('Chrome bookmarks saved! These will open when the workspace is activated.');
         }
 
         function changeSplit(monitor, splitType) {
@@ -1013,6 +1104,11 @@ https://www.arcgis.com/home/content.html"></textarea>
                 dropZones.style.gridTemplateColumns = '1fr';
                 dropZones.style.gridTemplateRows = '1fr';
                 workspaceConfig[monitor].apps = { full: null };
+            }
+            
+            // Clear Chrome bookmarks for removed zones
+            if (workspaceConfig[monitor].chromeBookmarks) {
+                workspaceConfig[monitor].chromeBookmarks = {};
             }
             
             initializeDragAndDrop();
@@ -1084,18 +1180,29 @@ https://www.arcgis.com/home/content.html"></textarea>
                 
                 const hotkey = formatHotkey(preset.hotkey);
                 let appsHtml = '';
+                let chromeInfo = '';
                 Object.keys(preset.config).forEach(monitor => {
                     const config = preset.config[monitor];
                     const apps = Object.values(config.apps).filter(app => app).join(', ');
                     if (apps) {
                         appsHtml += `<div class="monitor">Monitor ${monitor}: ${apps}</div>`;
+                        
+                        // Add Chrome bookmark info
+                        if (config.chromeBookmarks) {
+                            Object.keys(config.chromeBookmarks).forEach(zone => {
+                                const bookmarks = config.chromeBookmarks[zone];
+                                if (bookmarks && bookmarks.length > 0) {
+                                    chromeInfo += `<div style="font-size: 0.8rem; color: #666;">Chrome (M${monitor}): ${bookmarks.length} bookmarks</div>`;
+                                }
+                            });
+                        }
                     }
                 });
                 
                 card.innerHTML = `
                     <h4>${preset.name}</h4>
                     <div class="hotkey">${hotkey}</div>
-                    <div class="apps">${appsHtml}</div>
+                    <div class="apps">${appsHtml}${chromeInfo}</div>
                     <div class="actions">
                         <button class="btn btn-primary" onclick="switchPreset('${presetId}')">Load</button>
                         <button class="btn btn-secondary" onclick="editPreset('${presetId}')">Edit</button>
@@ -1109,7 +1216,7 @@ https://www.arcgis.com/home/content.html"></textarea>
         function switchPreset(presetId) {
             currentPresetId = presetId;
             const preset = workspacePresets[presetId];
-            workspaceConfig = { ...preset.config };
+            workspaceConfig = JSON.parse(JSON.stringify(preset.config)); // Deep copy
             
             // Update UI to reflect new configuration
             Object.keys(workspaceConfig).forEach(monitor => {
@@ -1134,7 +1241,7 @@ https://www.arcgis.com/home/content.html"></textarea>
 
         function saveCurrentPreset() {
             if (currentPresetId) {
-                workspacePresets[currentPresetId].config = { ...workspaceConfig };
+                workspacePresets[currentPresetId].config = JSON.parse(JSON.stringify(workspaceConfig));
                 savePresets();
                 alert('Current configuration saved to preset!');
                 updatePresetOverview();
@@ -1170,7 +1277,6 @@ https://www.arcgis.com/home/content.html"></textarea>
             document.getElementById('hotkey-alt').value = preset.hotkey.alt;
             document.getElementById('hotkey-ctrl').value = preset.hotkey.ctrl;
             document.getElementById('hotkey-letter').value = preset.hotkey.letter;
-            document.getElementById('chrome-bookmarks').value = (preset.bookmarks || []).join('\n');
             
             updateHotkeyPreview();
             document.querySelector('.dialog .btn-primary').textContent = 'Save Changes';
@@ -1202,7 +1308,6 @@ https://www.arcgis.com/home/content.html"></textarea>
             document.getElementById('hotkey-alt').value = 'true';
             document.getElementById('hotkey-ctrl').value = 'true';
             document.getElementById('hotkey-letter').value = 'W';
-            document.getElementById('chrome-bookmarks').value = '';
             
             updateHotkeyPreview();
             document.querySelector('.dialog .btn-primary').textContent = 'Create Preset';
@@ -1228,11 +1333,6 @@ https://www.arcgis.com/home/content.html"></textarea>
                 letter: document.getElementById('hotkey-letter').value
             };
             
-            const bookmarks = document.getElementById('chrome-bookmarks').value
-                .split('\n')
-                .map(line => line.trim())
-                .filter(line => line);
-            
             // Check for hotkey conflicts
             const hotkeyString = formatHotkey(hotkey);
             const existingPreset = Object.keys(workspacePresets).find(id => 
@@ -1248,8 +1348,7 @@ https://www.arcgis.com/home/content.html"></textarea>
             workspacePresets[presetId] = {
                 name: name,
                 hotkey: hotkey,
-                bookmarks: bookmarks,
-                config: { ...workspaceConfig }
+                config: JSON.parse(JSON.stringify(workspaceConfig))
             };
             
             if (!editingPresetId) {
@@ -1261,7 +1360,7 @@ https://www.arcgis.com/home/content.html"></textarea>
             updatePresetOverview();
             hidePresetDialog();
             
-            alert(editingPresetId ? 'Preset updated!' : 'New preset created!');
+            alert(editingPresetId ? 'Preset updated!' : 'New preset created and loaded! Configure your apps and Chrome bookmarks, then save.');
         }
 
         function generatePresetId(name) {
@@ -1327,13 +1426,21 @@ https://www.arcgis.com/home/content.html"></textarea>
                 script += `    hs.application.launchOrFocus("${app}")\n`;
             });
             
-            // Chrome bookmarks
-            if (preset.bookmarks && preset.bookmarks.length > 0) {
-                script += `\n    -- Open Chrome bookmarks\n`;
-                preset.bookmarks.forEach(bookmark => {
-                    script += `    hs.urlevent.openURL("${bookmark}")\n`;
-                });
-            }
+            // Chrome bookmarks per instance
+            Object.keys(workspaceConfig).forEach(monitor => {
+                const config = workspaceConfig[monitor];
+                if (config.chromeBookmarks) {
+                    Object.keys(config.chromeBookmarks).forEach(zone => {
+                        const bookmarks = config.chromeBookmarks[zone];
+                        if (bookmarks && bookmarks.length > 0) {
+                            script += `\n    -- Chrome bookmarks for Monitor ${monitor} (${zone})\n`;
+                            bookmarks.forEach(bookmark => {
+                                script += `    hs.urlevent.openURL("${bookmark}")\n`;
+                            });
+                        }
+                    });
+                }
+            });
             
             script += `\n    -- Window placement after delay\n`;
             script += `    hs.timer.doAfter(5, function()\n`;
